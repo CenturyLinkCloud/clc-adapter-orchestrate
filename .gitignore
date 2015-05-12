@@ -1,0 +1,6 @@
+/target/
+/.settings/
+/.classpath
+/.project
+/.idea
+wfaas-adapter-orchestrate.iml

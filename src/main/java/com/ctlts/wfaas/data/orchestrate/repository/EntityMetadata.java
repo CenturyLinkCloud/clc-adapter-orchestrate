@@ -15,16 +15,16 @@ import org.springframework.util.Assert;
  * @author mramach
  *
  */
-public class EntityMetadata {
+public class EntityMetadata<E, ID extends Serializable> {
     
-    private Class<?> type;
+    private final Class<E> type;
 
     /**
      * Constructs a new metadata instance for the provided type.
      * 
      * @param type The type this metadata instance will report on.
      */
-    public EntityMetadata(Class<?> type) {
+    public EntityMetadata(Class<E> type) {
         
         Assert.notNull(type, "You must provide a non-null type.");
         
@@ -77,5 +77,8 @@ public class EntityMetadata {
         return c != null ? c.value() : type.getSimpleName();
         
     }
-    
+
+    public Class<E> getType() {
+        return this.type;
+    }
 }

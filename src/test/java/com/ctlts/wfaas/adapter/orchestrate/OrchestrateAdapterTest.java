@@ -16,11 +16,13 @@ public class OrchestrateAdapterTest {
     private Client client = OrchestrateClient.builder("dc8f355e-75c1-44aa-a2a1-f8e64a26254c")
             .host("https://api.ctl-uc1-a.orchestrate.io/v0/").build();
 
-    private OrchestrateAdapter orchestrateAdapter = new OrchestrateAdapter(client);
+    private OrchestrateAdapter orchestrateAdapter = new OrchestrateAdapter();
 
     @Before
     public void setUp() throws Exception {
+        orchestrateAdapter.setClient(client);
         client.deleteCollection("myobjects").get();
+        client.close();
     }
 
     @Test

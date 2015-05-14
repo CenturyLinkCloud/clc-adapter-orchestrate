@@ -77,7 +77,7 @@ public class OrchestrateCrudRepositoryTest {
             template.setEndpoint("http://localhost:8080");
             template.setPort(8080);
             template.setUseSSL(false);
-            template.setApiKey("0d1b252d-607c-4fb8-9af5-853b09093679");
+            template.setApiKey("OUR-API-KEY");
             
             return template;
         

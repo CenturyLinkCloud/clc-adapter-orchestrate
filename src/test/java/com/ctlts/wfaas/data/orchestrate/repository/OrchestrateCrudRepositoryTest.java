@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.ctlts.wfaas.data.orchestrate.test.OrchestrateMockRule;
 
 /**
  * @author mramach
@@ -25,6 +28,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @ContextConfiguration
 public class OrchestrateCrudRepositoryTest {
 
+    @Rule
+    public OrchestrateMockRule rule = new OrchestrateMockRule();
+    
     @Autowired
     private TestEntityRespository repository;
     
@@ -90,7 +96,10 @@ public class OrchestrateCrudRepositoryTest {
         public OrchestrateTemplate orchestrateTemplate() {
             
             OrchestrateTemplate template = new OrchestrateTemplate();
-            template.setApiKey("0d1b252d-607c-4fb8-9af5-853b09093679");
+            template.setEndpoint("http://localhost:8080");
+            template.setPort(8080);
+            template.setUseSSL(false);
+            template.setApiKey("OUR-API-KEY");
             
             return template;
         

@@ -1,6 +1,7 @@
 package com.ctlts.wfaas.adapter.orchestrate;
 
 import io.orchestrate.client.Client;
+import io.orchestrate.client.KvMetadata;
 import io.orchestrate.client.OrchestrateClient;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,8 +27,23 @@ public class OrchestrateAdapterTest {
     public void save() {
         orchestrateAdapter.save("myobjects", "mykey", new MyObject("myname", "mydescription"));
 
+        MyObject myObject = (this.client.kv("myobjects", "mykey").get(MyObject.class).get()).getValue();;
+        assertThat(myObject.getName(), equalTo("myname"));
+        assertThat(myObject.getDescription(), equalTo("mydescription"));
+    }
+
+    @Test
+    public void findOne() {
+        insertItem("myobjects", "mykey", "{`name`:`myname`, `description`:`mydescription`}");
+
         MyObject myObject = (MyObject) orchestrateAdapter.findOne("myobjects", "mykey", MyObject.class);
         assertThat(myObject.getName(), equalTo("myname"));
         assertThat(myObject.getDescription(), equalTo("mydescription"));
+    }
+
+    private KvMetadata insertItem(String collection, String key, String json_ish, Object...args) {
+        return client.kv(collection, key)
+                .put(String.format(json_ish.replace('`', '"'), args))
+                .get();
     }
 }

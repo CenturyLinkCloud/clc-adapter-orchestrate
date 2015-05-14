@@ -43,7 +43,7 @@ After you have created and entity class, simply extend our OrchestrateRepository
 
 ### Additional Configuration
 
-The best way to configure you application to detect use a repository is our `@EnableOrchestrateRepositories` annotation. This annotation allows you to define the location of you repository interface classes. The configuration will also make these interfaces available to the application as injectable beans in the application context.
+The best way to configure you application to detect a repository is our `@EnableOrchestrateRepositories` annotation. This annotation allows you to define the location of you repository interface classes. The configuration will also make these interfaces available to the application as injectable beans in the application context.
 
     @Configuration
     @EnableOrchestrateRepositories("path.to.my.repository.interface")
@@ -61,7 +61,7 @@ The best way to configure you application to detect use a repository is our `@En
         
     } 
 
-The 2 element to pay attention to here are the `@EnableOrchestrateRepositories` annotation defining the location of our interface as well as the bean definition method creating the OrchestrationTemplate instance. The template is the source of all Orchestrate client operations. This template has several configuration options related to the Orchestrate API and endpoint configuration.
+The two configuration elements to pay attention to here are the `@EnableOrchestrateRepositories` annotation defining the location of our interface, as well as the bean definition method creating the OrchestrationTemplate instance. The template is the source of all Orchestrate client operations. This template has several configuration options related to the Orchestrate API and endpoint configuration.
 
 ### Repository Injection
 

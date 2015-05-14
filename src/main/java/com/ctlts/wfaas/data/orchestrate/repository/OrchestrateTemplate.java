@@ -18,11 +18,13 @@ public class OrchestrateTemplate {
     
     private String endpoint = "https://api.ctl-uc1-a.orchestrate.io/v0/";
     private String apiKey;
+    private int port = 80;
+    private boolean useSSL = true;
     private OrchestrateClient client;
     
     @PostConstruct
     public void postConstruct() {
-        client = OrchestrateClient.builder(apiKey).host(endpoint).build();
+        client = OrchestrateClient.builder(apiKey).host(endpoint).port(port).useSSL(useSSL).build();
     }
 
     public <E> E save(String collection, String id, E entity) {
@@ -42,6 +44,14 @@ public class OrchestrateTemplate {
     
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setUseSSL(boolean useSSL) {
+        this.useSSL = useSSL;
     }
     
 }

@@ -60,9 +60,9 @@ public class OrchestrateTemplate {
         this.useSSL = useSSL;
     }
 
-    public boolean exists(String id, String collection) {
+    public boolean exists(String id, Class<?> entityClass, String collection) {
         return this.client.searchCollection(collection)
-                .get(String.class, getIdQuery(id))
+                .get(entityClass, getIdQuery(id))
                 .get().iterator().hasNext();
     }
 
@@ -73,6 +73,20 @@ public class OrchestrateTemplate {
 
         return StreamSupport.stream(searchResults.spliterator(), false)
                 .map(myObjectResult -> myObjectResult.getKvObject().getValue()).collect(Collectors.toList());
+    }
+
+    public long count(Class<?> entityClass, String collection) {
+        return (this.client.searchCollection(collection)
+                .get(entityClass, getQuery())
+                .get()).getCount();
+    }
+
+    public void delete(String id, String collection) {
+        client.kv(collection, id).delete(Boolean.TRUE).get();
+    }
+
+    public void deleteAll(String collection) {
+        client.deleteCollection(collection);
     }
 
     public void setEndpoint(String endpoint) {
@@ -90,5 +104,4 @@ public class OrchestrateTemplate {
     private String getQuery() {
         return "*";
     }
-
 }

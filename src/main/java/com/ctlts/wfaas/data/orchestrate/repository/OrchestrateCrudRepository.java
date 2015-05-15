@@ -56,7 +56,8 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
 
     @Override
     public boolean exists(ID id) {
-        return orchestrateTemplate.exists((String)id, entityMetadata.getCollection());
+        Assert.notNull(id, "The given id must not be null!");
+        return orchestrateTemplate.exists((String)id, entityMetadata.getType(), entityMetadata.getCollection());
     }
 
     @Override
@@ -71,23 +72,32 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
 
     @Override
     public long count() {
-        return 0;
+        return orchestrateTemplate.count(entityMetadata.getType(), entityMetadata.getCollection());
     }
 
     @Override
     public void delete(ID id) {
+        Assert.notNull(id, "The given id must not be null!");
+        orchestrateTemplate.delete((String) id, entityMetadata.getCollection());
     }
 
     @Override
     public void delete(T entity) {
+        Assert.notNull(entity, "The given entity must not be null!");
+        orchestrateTemplate.delete(entityMetadata.getId(entity), entityMetadata.getCollection());
     }
 
     @Override
     public void delete(Iterable<? extends T> entities) {
+        Assert.notNull(entities, "The given Iterable of entities not be null!");
+        for (T entity : entities) {
+            delete(entity);
+        }
     }
 
     @Override
     public void deleteAll() {
+        orchestrateTemplate.deleteAll(entityMetadata.getCollection());
     }
 
 }

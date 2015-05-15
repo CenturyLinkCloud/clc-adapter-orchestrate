@@ -7,6 +7,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.util.Assert;
@@ -61,24 +62,24 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
     @Override
     public boolean exists(ID id) {
         Assert.notNull(id, "The given id must not be null!");
-        return orchestrateTemplate.exists((String)id, metadata.getDomainType(), entityMetadata.getCollection());
+        return orchestrateTemplate.exists(getIdQuery((String) id), metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override
     public Iterable<T> findAll() {
-        return (Iterable<T>) orchestrateTemplate.findAll(metadata.getDomainType(), entityMetadata.getCollection());
+        return (Iterable<T>) orchestrateTemplate.findAll(getQuery(), metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override
     public Iterable<T> findAll(Iterable<ID> ids) {
         List<String> idStrings = new ArrayList<String>();
         ids.forEach(id -> idStrings.add((String) id));
-        return (Iterable<T>) orchestrateTemplate.findAll(idStrings, metadata.getDomainType(), entityMetadata.getCollection());
+        return (Iterable<T>) orchestrateTemplate.findAll(getIdsQuery(idStrings), metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override
     public long count() {
-        return orchestrateTemplate.count(metadata.getDomainType(), entityMetadata.getCollection());
+        return orchestrateTemplate.count(getQuery(), metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override
@@ -104,6 +105,18 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
     @Override
     public void deleteAll() {
         orchestrateTemplate.deleteAll(entityMetadata.getCollection());
+    }
+
+    private String getIdQuery(String id) {
+        return "@path.key:" + id;
+    }
+
+    private String getIdsQuery(List<String> ids) {
+        return "@path.key:" + ids.stream().collect(Collectors.joining(" "));
+    }
+
+    private String getQuery() {
+        return "*";
     }
 
 }

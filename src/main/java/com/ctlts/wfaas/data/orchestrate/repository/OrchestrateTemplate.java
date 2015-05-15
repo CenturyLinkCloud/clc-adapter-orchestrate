@@ -75,20 +75,16 @@ public class OrchestrateTemplate {
         return this.client.kv(collection, id).get(entityClass).get().getValue();
     }
 
-    public boolean exists(String id, Class<?> entityClass, String collection) {
-        return !query(collection, getIdQuery(id), entityClass).isEmpty();
+    public boolean exists(String query, Class<?> entityClass, String collection) {
+        return !query(collection, query, entityClass).isEmpty();
     }
 
-    public <T> Iterable<T> findAll(Class<T> entityClass, String collection) {
-        return query(collection, getQuery(), entityClass);
+    public <T> Iterable<T> findAll(String query, Class<T> entityClass, String collection) {
+        return query(collection, query, entityClass);
     }
 
-    public <T> Iterable<T> findAll(List<String> idStrings, Class<T> entityClass, String collection) {
-        return query(collection, getIdsQuery(idStrings), entityClass);
-    }
-
-    public long count(Class<?> entityClass, String collection) {
-        return query(collection, getQuery(), entityClass).size();
+    public long count(String query, Class<?> entityClass, String collection) {
+        return query(collection, query, entityClass).size();
     }
 
     public void delete(String id, String collection) {
@@ -113,18 +109,6 @@ public class OrchestrateTemplate {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
-    }
-
-    private String getIdQuery(String id) {
-        return "@path.key:" + id;
-    }
-
-    private String getIdsQuery(List<String> ids) {
-        return "@path.key:" + ids.stream().collect(Collectors.joining(" "));
-    }
-
-    private String getQuery() {
-        return "*";
     }
 
 }

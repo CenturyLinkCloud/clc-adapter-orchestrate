@@ -61,7 +61,7 @@ public class OrchestrateMockRule extends WireMockRule {
     
     public OrchestrateMockRule() {
 
-        super(wireMockConfig().port(8080).extensions(new OrchestrateResponseTransformer()));
+        super(wireMockConfig().port(5124).extensions(new OrchestrateResponseTransformer()));
 
         stubFor(put(urlMatching("/v0/.*/.*")).willReturn(aResponse()));
         

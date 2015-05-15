@@ -72,8 +72,8 @@ public class OrchestrateRepositoryQueryTest {
         public OrchestrateTemplate orchestrateTemplate() {
             
             OrchestrateTemplate template = new OrchestrateTemplate();
-            template.setEndpoint("http://localhost:8080");
-            template.setPort(8080);
+            template.setEndpoint("http://localhost:5124");
+            template.setPort(5124);
             template.setUseSSL(false);
             template.setApiKey("OUR-API-KEY");
             

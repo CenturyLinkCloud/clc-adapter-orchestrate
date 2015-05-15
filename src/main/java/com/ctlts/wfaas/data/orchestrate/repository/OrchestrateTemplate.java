@@ -5,19 +5,15 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 
 import io.orchestrate.client.OrchestrateClient;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import io.orchestrate.client.SearchResults;
-import org.springframework.util.Assert;
-
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.util.Assert;
 
 /**
  * @author mramach

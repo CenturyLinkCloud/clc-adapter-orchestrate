@@ -35,7 +35,15 @@ public class EnableOrchestrateRepositoriesTest {
         
         @Bean
         public OrchestrateTemplate orchestrateTemplate() {
-            return new OrchestrateTemplate();
+            
+            OrchestrateTemplate template = new OrchestrateTemplate();
+            template.setEndpoint("http://localhost:8080");
+            template.setPort(8080);
+            template.setUseSSL(false);
+            template.setApiKey("OUR-API-KEY");
+            
+            return template;
+            
         }
         
     }

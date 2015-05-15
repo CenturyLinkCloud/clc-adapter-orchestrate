@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ctlts.wfaas.data.orchestrate.repository;
+package com.ctlts.wfaas.data.orchestrate.config;
 
 import java.io.Serializable;
 
@@ -12,6 +12,11 @@ import org.springframework.data.repository.core.support.RepositoryFactorySupport
 import org.springframework.data.repository.query.EvaluationContextProvider;
 import org.springframework.data.repository.query.QueryLookupStrategy;
 import org.springframework.data.repository.query.QueryLookupStrategy.Key;
+
+import com.ctlts.wfaas.data.orchestrate.query.OrchestrateQueryLookupStrategy;
+import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateCrudRepository;
+import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateRepository;
+import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateTemplate;
 
 /**
  * @author mramach

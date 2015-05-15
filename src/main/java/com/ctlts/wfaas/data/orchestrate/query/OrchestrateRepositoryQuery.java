@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ctlts.wfaas.data.orchestrate.repository;
+package com.ctlts.wfaas.data.orchestrate.query;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -12,6 +12,9 @@ import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
+
+import com.ctlts.wfaas.data.orchestrate.repository.EntityMetadata;
+import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateTemplate;
 
 
 /**

@@ -17,6 +17,7 @@ public class TestEntity {
     @Id
     private String id = UUID.randomUUID().toString();
     private String stringProperty;
+    private TestEntity objectProperty;
 
     public String getId() {
         return id;
@@ -34,4 +35,12 @@ public class TestEntity {
         this.stringProperty = stringProperty;
     }
 
+    public TestEntity getObjectProperty() {
+        return objectProperty;
+    }
+
+    public void setObjectProperty(TestEntity objectProperty) {
+        this.objectProperty = objectProperty;
+    }
+    
 }

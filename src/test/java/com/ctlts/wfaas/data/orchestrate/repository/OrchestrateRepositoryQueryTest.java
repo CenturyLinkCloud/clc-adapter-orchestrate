@@ -64,6 +64,24 @@ public class OrchestrateRepositoryQueryTest {
         
     }
     
+    @Test
+    public void testFindByNestedProperty() {
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("Mark Was Here");
+        
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty("Hello World!");
+        t1.setObjectProperty(n1);
+        
+        repository.save(t1);
+        
+        TestEntity found = repository.findByObjectProperty_StringProperty("Mark Was Here");
+        
+        assertNotNull("Checking that the result is not null.", found);
+        
+    }
+    
     @Configuration
     @EnableOrchestrateRepositories("com.ctlts.wfaas.data.orchestrate.repository")
     public static class TestConfig {

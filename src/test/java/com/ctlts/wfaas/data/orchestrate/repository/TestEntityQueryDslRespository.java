@@ -15,4 +15,6 @@ public interface TestEntityQueryDslRespository extends OrchestrateRepository<Tes
 
     public List<TestEntity> findByStringProperty(String stringProperty);
 
+    public TestEntity findByObjectProperty_StringProperty(String stringProperty);
+
 }

@@ -19,6 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,6 +45,7 @@ import org.apache.lucene.store.RAMDirectory;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.tomakehurst.wiremock.common.FileSource;
 import com.github.tomakehurst.wiremock.extension.ResponseTransformer;
 import com.github.tomakehurst.wiremock.http.HttpHeaders;
@@ -318,7 +320,7 @@ public class OrchestrateMockRule extends WireMockRule {
                 JsonNode root = mapper.readValue(value, JsonNode.class);
                 
                 root.fields().forEachRemaining(e -> {
-                    doc.add(new TextField(e.getKey(), e.getValue().asText(), Field.Store.YES));
+                    addTextField(doc, e, "");
                 });
                 
             } catch (Exception e) {
@@ -326,6 +328,20 @@ public class OrchestrateMockRule extends WireMockRule {
             }
             
             return doc;
+            
+        }
+
+        private void addTextField(Document doc, Entry<String, JsonNode> e, String path) {
+            
+            if(ObjectNode.class.isAssignableFrom(e.getValue().getClass())) {
+                
+                ((ObjectNode)e.getValue()).fields().forEachRemaining(n -> {
+                    addTextField(doc, n, path + e.getKey() + ".");
+                });
+                
+            } else {
+                doc.add(new TextField(path + e.getKey(), e.getValue().asText(), Field.Store.YES));
+            }
             
         }
         

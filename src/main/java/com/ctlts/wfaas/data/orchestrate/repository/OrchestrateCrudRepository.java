@@ -50,7 +50,8 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
 
     @Override
     public T findOne(ID id) {
-        return null;
+        Assert.notNull(id, "The given id must not be null!");
+        return (T) orchestrateTemplate.findById((String)id, entityMetadata.getType(), entityMetadata.getCollection());
     }
 
     @Override

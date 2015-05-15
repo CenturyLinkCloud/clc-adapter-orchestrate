@@ -12,12 +12,6 @@
 		<artifactId>wfaas-maven-parent</artifactId>
 		<version>0.0.1</version>
 	</parent>
-    <repositories>
-        <repository>
-            <id>my-internal-site</id>
-            <url>http://10.121.41.19:8081/content/groups/public</url>
-        </repository>
-    </repositories>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>4.1.6.RELEASE</spring.version>

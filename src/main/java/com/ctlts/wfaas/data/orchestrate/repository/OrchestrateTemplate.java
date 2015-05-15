@@ -5,8 +5,6 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 
 import io.orchestrate.client.OrchestrateClient;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -37,12 +35,8 @@ public class OrchestrateTemplate {
     }
 
     @PreDestroy
-    public void preDestroy() {
-        try {
-            client.close();
-        } catch (IOException e) {
-            //do nothing
-        }
+    public void preDestroy() throws Exception {
+        client.close();
     }
 
     public <E> E save(String collection, String id, E entity) {
@@ -73,15 +67,18 @@ public class OrchestrateTemplate {
     }
 
     public <E> E findById(String id, Class<E> entityClass, String collection) {
+        
         Assert.hasLength(id, "The id can not be null or an empty String.");
+        
         return this.client.kv(collection, id).get(entityClass).get().getValue();
+        
     }
 
     public void setEndpoint(String endpoint) {
         this.endpoint = endpoint;
     }
 
-    public <ID extends Serializable> void setApiKey(String apiKey) {
+    public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 

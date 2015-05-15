@@ -47,7 +47,7 @@ public class EntityMetadataTest {
         
         String collection = new EntityMetadata(TestFixtureValid.class).getCollection();
         
-        assertEquals("Checking that the id value was returned.", 
+        assertEquals("Checking that the id value was returned.",
                 TestFixtureValid.class.getSimpleName(), collection);
         
     }
@@ -60,6 +60,20 @@ public class EntityMetadataTest {
         assertEquals("Checking that the id value was returned.", 
                 "TestFixture", collection);
         
+    }
+
+    @Test
+    public void testGetType() {
+        assertEquals("Checking that the id value was returned.",
+                TestFixtureValid.class, new EntityMetadata(TestFixtureValid.class).getType());
+
+    }
+
+    @Test
+    public void testGetType_WithAnnotation() {
+        assertEquals("Checking that the id value was returned.",
+                TestFixtureWithCollectionAnnotation.class, new EntityMetadata(TestFixtureWithCollectionAnnotation.class).getType());
+
     }
     
     public static class TestFixtureValid {

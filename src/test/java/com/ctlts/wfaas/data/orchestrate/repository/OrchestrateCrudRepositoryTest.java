@@ -65,6 +65,28 @@ public class OrchestrateCrudRepositoryTest {
         assertEquals("Checking that the list is the expected size.", 2, result.size());
         
     }
+
+    @Test
+    public void testFindOne() {
+
+        List<TestEntity> values = Arrays.asList(1, 2).stream()
+                .map(v -> {
+
+                    TestEntity t = new TestEntity();
+                    t.setStringProperty(String.format("Hello %s time(s)", v));
+
+                    return t;
+
+                }).collect(Collectors.toList());
+        repository.save(values);
+
+        TestEntity actual = repository.findOne(values.get(1).getId());
+
+        assertNotNull("Checking that the result is not null.", actual);
+        assertEquals("Checking that the list is the expected size.", values.get(1).getId(), actual.getId());
+        assertEquals("Checking that the list is the expected size.", values.get(1).getStringProperty(), actual.getStringProperty());
+
+    }
     
     @Configuration
     @EnableOrchestrateRepositories("com.ctlts.wfaas.data.orchestrate.repository")

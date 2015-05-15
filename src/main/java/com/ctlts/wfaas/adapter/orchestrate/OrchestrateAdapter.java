@@ -4,24 +4,39 @@ import io.orchestrate.client.Client;
 import io.orchestrate.client.KvObject;
 import io.orchestrate.client.OrchestrateClient;
 import io.orchestrate.client.dao.GenericAsyncDao;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 
 /**
  * Created by amoli.ajarekar on 5/11/2015.
  */
+@Component
 public class OrchestrateAdapter {
 
-    private String orchestrateEndpoint = "https://api.ctl-uc1-a.orchestrate.io/v0/";
-    private String orchestrateApiKey = "dc8f355e-75c1-44aa-a2a1-f8e64a26254c";
+    @Value("orchestrate.host")
+    private String orchestrateEndpoint;
+    @Value("orchestrate.apiKey")
+    private String orchestrateApiKey;
     private Client client;
 
-    public OrchestrateAdapter() {
+    @PostConstruct
+    public void createClient() {
         this.client = OrchestrateClient.builder(orchestrateApiKey)
                 .host(orchestrateEndpoint)
                 .build();
     }
 
-    public OrchestrateAdapter(Client client) {
-        this.client = client;
+    @PreDestroy
+    public void closeClient() {
+        try {
+            this.client.close();
+        } catch (IOException e) {
+
+        }
     }
 
     public void save(String collection, String key, Object object) {
@@ -32,7 +47,7 @@ public class OrchestrateAdapter {
         return ((KvObject)this.client.kv(collection, key).get(clazz).get()).getValue();
     }
 
-
-
-
+    public void setClient(Client client) {
+        this.client = client;
+    }
 }

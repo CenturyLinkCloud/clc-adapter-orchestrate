@@ -270,6 +270,41 @@ public class OrchestrateMockRule extends WireMockRule {
             
         }
         
+        @Path(value = ".*/v0/(?<collection>.*)/(?<key>.*)\\?.*", method = RequestMethod.DELETE)
+        private ResponseDefinition delete(Request request, ResponseDefinition responseDefinition) {
+            
+            try {
+                
+                Matcher matcher = Pattern.compile(".*/v0/(?<collection>.*)/(?<key>.*)\\?.*").matcher(request.getUrl());
+                matcher.find();
+//                String collection = matcher.group("collection");
+                String key = matcher.group("key");
+                
+                try(IndexWriter index = new IndexWriter(dir, 
+                        new IndexWriterConfig(new StandardAnalyzer()))) {
+
+                    index.deleteDocuments(new Term(VAR_ID, key));
+                
+                }
+                
+                HttpHeaders headers = new HttpHeaders().plus(
+                        httpHeader("X-ORCHESTRATE-REQ-ID:", UUID.randomUUID().toString()),
+                        httpHeader("ETag:", UUID.randomUUID().toString())
+                );
+                
+                ResponseDefinition def = ResponseDefinition.ok();
+                def.setStatus(HttpStatus.SC_NO_CONTENT);
+                def.setHeaders(headers);
+                def.setBody("");
+                
+                return def;
+                
+            } catch (IOException e) {
+                return new ResponseDefinition(HttpStatus.SC_INTERNAL_SERVER_ERROR, "");
+            }
+            
+        }
+        
         private Document createDocument(String collection, String id, String value) {
             
             Document doc = new Document();

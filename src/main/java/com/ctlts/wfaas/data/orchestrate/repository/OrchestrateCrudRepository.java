@@ -56,12 +56,12 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
 
     @Override
     public boolean exists(ID id) {
-        return false;
+        return orchestrateTemplate.exists((String)id, entityMetadata.getCollection());
     }
 
     @Override
     public Iterable<T> findAll() {
-        return null;
+        return orchestrateTemplate.findAll(entityMetadata.getType(), entityMetadata.getCollection());
     }
 
     @Override

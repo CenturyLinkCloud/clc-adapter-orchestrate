@@ -8,10 +8,13 @@ import io.orchestrate.client.OrchestrateClient;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import io.orchestrate.client.SearchResults;
 import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * @author mramach
@@ -41,19 +44,35 @@ public class OrchestrateTemplate {
     }
 
     public <E> E save(String collection, String id, E entity) {
-        
-        Assert.hasLength(id, "The id can not be null or an empty String.");
-        Assert.notNull(entity, "The entity can not be null.");
-        
         client.kv(collection, id).put(entity).get();
-        
         return (E)client.kv(collection, id).get(entity.getClass()).get().getValue();
-        
     }
 
     public <E> E findById(String id, Class<E> entityClass, String collection) {
-        Assert.hasLength(id, "The id can not be null or an empty String.");
         return this.client.kv(collection, id).get(entityClass).get().getValue();
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public void setUseSSL(boolean useSSL) {
+        this.useSSL = useSSL;
+    }
+
+    public boolean exists(String id, String collection) {
+        return this.client.searchCollection(collection)
+                .get(String.class, getIdQuery(id))
+                .get().iterator().hasNext();
+    }
+
+    public <T> Iterable<T> findAll(Class<T> entityClass, String collection) {
+        SearchResults<T> searchResults = this.client.searchCollection(collection)
+                .get(entityClass, getQuery())
+                .get();
+
+        return StreamSupport.stream(searchResults.spliterator(), false)
+                .map(myObjectResult -> myObjectResult.getKvObject().getValue()).collect(Collectors.toList());
     }
 
     public void setEndpoint(String endpoint) {
@@ -64,12 +83,12 @@ public class OrchestrateTemplate {
         this.apiKey = apiKey;
     }
 
-    public void setPort(int port) {
-        this.port = port;
+    private String getIdQuery(String id) {
+        return "@path.key:" + id;
     }
 
-    public void setUseSSL(boolean useSSL) {
-        this.useSSL = useSSL;
+    private String getQuery() {
+        return "*";
     }
-    
+
 }

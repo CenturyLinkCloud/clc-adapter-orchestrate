@@ -9,6 +9,9 @@ import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.core.support.ReflectionEntityInformation;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+import org.springframework.data.repository.query.EvaluationContextProvider;
+import org.springframework.data.repository.query.QueryLookupStrategy;
+import org.springframework.data.repository.query.QueryLookupStrategy.Key;
 
 /**
  * @author mramach
@@ -30,12 +33,28 @@ public class OrchestrateRepositoryFactory extends RepositoryFactorySupport {
 
     @Override
     protected Object getTargetRepository(RepositoryMetadata metadata) {
+        
         return new OrchestrateCrudRepository(metadata, orchestrateTemplate);
+        
     }
 
     @Override
     protected Class<?> getRepositoryBaseClass(RepositoryMetadata metadata) {
+        
         return OrchestrateRepository.class;
+        
     }
+    
+    @Override
+    protected QueryLookupStrategy getQueryLookupStrategy(Key key,
+            EvaluationContextProvider evaluationContextProvider) {
+
+        return new OrchestrateQueryLookupStrategy(orchestrateTemplate);
+        
+    }
+
+//    private static boolean isQueryDslRepository(Class<?> repositoryInterface) {
+//        return QUERY_DSL_PRESENT && QueryDslPredicateExecutor.class.isAssignableFrom(repositoryInterface);
+//    }
 
 }

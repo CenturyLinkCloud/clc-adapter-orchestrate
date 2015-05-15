@@ -13,6 +13,7 @@ import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 
+
 /**
  * @author mramach
  *
@@ -36,18 +37,38 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
     @Override
     public Object execute(Object[] parameters) {
         
-        AtomicInteger idx = new AtomicInteger(-1);
         StringBuffer query = new StringBuffer();
+        AtomicInteger orIdx = new AtomicInteger(-1);
+        AtomicInteger idx = new AtomicInteger(-1);
         
-        tree.getParts().forEach(p -> {
-            query.append(eq(p, parameters[idx.incrementAndGet()]));
+        tree.forEach(p -> {
+            
+            if(orIdx.incrementAndGet() > 0) {
+                query.append(" OR ");
+            }
+            
+            StringBuffer expr = new StringBuffer();
+            AtomicInteger exprIdx = new AtomicInteger(-1);
+            
+            p.forEach(c -> {
+                
+                if(exprIdx.incrementAndGet() > 0) {
+                    expr.append(" AND ");
+                }
+                
+                expr.append(eq(c, parameters[idx.incrementAndGet()]));
+                
+            });
+            
+            query.append("(").append(expr).append(")");
+            
         });
         
         List<?> results = (List<?>) orchestrateTemplate.query(entityMetadata.getCollection(), 
                 query.toString(), metadata.getDomainType());
 
         if(!queryMethod.isCollectionQuery()) {
-            // TODO - Throw exception if we recieve more than one value back in the result set.
+            // TODO - Throw exception if we receive more than one value back in the result set.
             return results.stream().findFirst().orElse(null);
         }
         

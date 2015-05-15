@@ -209,10 +209,6 @@ public class OrchestrateMockRule extends WireMockRule {
                 Query query = parser.parse(queryString);
                 
                 searcher.search(query, collector);
-
-                if(collector.getTotalHits() == 0) {
-                    return ResponseDefinition.notFound();
-                }
                 
                 // Construct response body
                 ObjectMapper mapper = new ObjectMapper();
@@ -220,8 +216,8 @@ public class OrchestrateMockRule extends WireMockRule {
                 List<Map<String, Object>> results = new LinkedList<Map<String,Object>>();
                 Long reftime = System.currentTimeMillis() / 1000;
                 
-                response.put("count", 1);
-                response.put("total_count", 1);
+                response.put("count", collector.getTotalHits());
+                response.put("total_count", collector.getTotalHits());
                 response.put("results", results);
                 
                 Arrays.stream(collector.topDocs().scoreDocs).forEach(hit -> {

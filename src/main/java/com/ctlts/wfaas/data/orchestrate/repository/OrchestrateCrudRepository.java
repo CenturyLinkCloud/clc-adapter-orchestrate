@@ -4,6 +4,7 @@
 package com.ctlts.wfaas.data.orchestrate.repository;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -67,7 +68,9 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
 
     @Override
     public Iterable<T> findAll(Iterable<ID> ids) {
-        return null;
+        List<String> idStrings = new ArrayList<String>();
+        ids.forEach(id -> idStrings.add((String) id));
+        return orchestrateTemplate.findAll(idStrings, entityMetadata.getType(), entityMetadata.getCollection());
     }
 
     @Override

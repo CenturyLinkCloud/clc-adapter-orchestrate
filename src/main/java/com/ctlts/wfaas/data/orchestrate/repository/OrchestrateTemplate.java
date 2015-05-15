@@ -13,6 +13,7 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -75,6 +76,15 @@ public class OrchestrateTemplate {
                 .map(myObjectResult -> myObjectResult.getKvObject().getValue()).collect(Collectors.toList());
     }
 
+    public <T> Iterable<T> findAll(List<String> idStrings, Class<T> entityClass, String collection) {
+        SearchResults<T> searchResults = this.client.searchCollection(collection)
+                .get(entityClass, getIdsQuery(idStrings))
+                .get();
+
+        return StreamSupport.stream(searchResults.spliterator(), false)
+                .map(myObjectResult -> myObjectResult.getKvObject().getValue()).collect(Collectors.toList());
+    }
+
     public long count(Class<?> entityClass, String collection) {
         return (this.client.searchCollection(collection)
                 .get(entityClass, getQuery())
@@ -101,7 +111,12 @@ public class OrchestrateTemplate {
         return "@path.key:" + id;
     }
 
+    private String getIdsQuery(List<String> ids) {
+        return "@path.key:" + ids.stream().collect(Collectors.joining(" "));
+    }
+
     private String getQuery() {
         return "*";
     }
+
 }

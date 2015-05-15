@@ -4,18 +4,20 @@
 package com.ctlts.wfaas.data.orchestrate.repository;
 
 import io.orchestrate.client.OrchestrateClient;
-import io.orchestrate.client.SearchResults;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import io.orchestrate.client.SearchResults;
+import org.springframework.util.Assert;
+
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import org.springframework.util.Assert;
 
 /**
  * @author mramach
@@ -58,44 +60,35 @@ public class OrchestrateTemplate {
 
         Assert.hasLength(collection, "The collection can not be null or an empty String.");
         Assert.notNull(type, "The type can not be null.");
-        
+
         List<E> results = new LinkedList<E>();
-        
+
         client.searchCollection(collection).get(type, query).get(30, TimeUnit.SECONDS).getResults().forEach(sr -> {
             results.add(sr.getKvObject().getValue());
         });
-        
+
         return results;
-        
+
     }
 
-    public <E> E findById(String id, Class<E> type, String collection) {
-        
-        Assert.hasLength(id, "The id can not be null or an empty String.");
-
-        return this.client.kv(collection, id).get(type).get().getValue();
-
+    public <E> E findById(String id, Class<E> entityClass, String collection) {
+        return this.client.kv(collection, id).get(entityClass).get().getValue();
     }
 
     public boolean exists(String id, Class<?> entityClass, String collection) {
-        return this.client.searchCollection(collection)
-                .get(entityClass, getIdQuery(id))
-                .get().iterator().hasNext();
+        return !query(collection, getIdQuery(id), entityClass).isEmpty();
     }
 
     public <T> Iterable<T> findAll(Class<T> entityClass, String collection) {
-        SearchResults<T> searchResults = this.client.searchCollection(collection)
-                .get(entityClass, getQuery())
-                .get();
+        return query(collection, getQuery(), entityClass);
+    }
 
-        return StreamSupport.stream(searchResults.spliterator(), false)
-                .map(myObjectResult -> myObjectResult.getKvObject().getValue()).collect(Collectors.toList());
+    public <T> Iterable<T> findAll(List<String> idStrings, Class<T> entityClass, String collection) {
+        return query(collection, getIdsQuery(idStrings), entityClass);
     }
 
     public long count(Class<?> entityClass, String collection) {
-        return (this.client.searchCollection(collection)
-                .get(entityClass, getQuery())
-                .get()).getCount();
+        return query(collection, getQuery(), entityClass).size();
     }
 
     public void delete(String id, String collection) {
@@ -106,10 +99,6 @@ public class OrchestrateTemplate {
         client.deleteCollection(collection);
     }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
-    
     public void setPort(int port) {
         this.port = port;
     }
@@ -118,12 +107,20 @@ public class OrchestrateTemplate {
         this.useSSL = useSSL;
     }
 
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
+    }
+
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
     }
 
     private String getIdQuery(String id) {
         return "@path.key:" + id;
+    }
+
+    private String getIdsQuery(List<String> ids) {
+        return "@path.key:" + ids.stream().collect(Collectors.joining(" "));
     }
 
     private String getQuery() {

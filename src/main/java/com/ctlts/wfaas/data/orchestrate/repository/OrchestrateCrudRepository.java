@@ -15,9 +15,10 @@ import org.springframework.util.Assert;
  * @author mramach
  *
  */
+@SuppressWarnings({"unchecked", "rawtypes"})
 public class OrchestrateCrudRepository<T, ID extends Serializable> implements OrchestrateRepository<T, ID> {
 
-    private EntityMetadata entityMetadata;
+    private EntityMetadata<T, ID> entityMetadata;
     private OrchestrateTemplate orchestrateTemplate;
     
     public OrchestrateCrudRepository(RepositoryMetadata metadata, OrchestrateTemplate orchestrateTemplate) {

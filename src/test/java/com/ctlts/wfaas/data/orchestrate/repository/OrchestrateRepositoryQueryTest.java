@@ -5,6 +5,9 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 
 import static org.junit.Assert.*;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,13 +34,31 @@ public class OrchestrateRepositoryQueryTest {
     private TestEntityQueryDslRespository repository;
     
     @Test
-    public void testFindByProperty() {
+    public void testFindByProperty_FindOne() {
         
-        TestEntity testEntity = new TestEntity();
-        testEntity.setStringProperty("Hello World!");
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty("Hello World!");
         
-        TestEntity result = repository.save(testEntity);
-        TestEntity found = repository.findById(result.getId());
+        repository.save(t1);
+        
+        TestEntity found = repository.findById(t1.getId());
+        
+        assertNotNull("Checking that the result is not null.", found);
+        
+    }
+    
+    @Test
+    public void testFindByProperty_List() {
+        
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty("testFindByProperty_List 1");
+        
+        TestEntity t2 = new TestEntity();
+        t2.setStringProperty("testFindByProperty_List 2");
+        
+        repository.save(Arrays.asList(t1, t2));
+        
+        List<TestEntity> found = repository.findByStringProperty("testFindByProperty_List*");
         
         assertNotNull("Checking that the result is not null.", found);
         

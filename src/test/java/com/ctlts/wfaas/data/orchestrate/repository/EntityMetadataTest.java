@@ -61,20 +61,6 @@ public class EntityMetadataTest {
                 "TestFixture", collection);
         
     }
-
-    @Test
-    public void testGetType() {
-        assertEquals("Checking that the id value was returned.",
-                TestFixtureValid.class, new EntityMetadata(TestFixtureValid.class).getType());
-
-    }
-
-    @Test
-    public void testGetType_WithAnnotation() {
-        assertEquals("Checking that the id value was returned.",
-                TestFixtureWithCollectionAnnotation.class, new EntityMetadata(TestFixtureWithCollectionAnnotation.class).getType());
-
-    }
     
     public static class TestFixtureValid {
         

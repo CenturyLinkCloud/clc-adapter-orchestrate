@@ -3,13 +3,14 @@ package com.ctlts.wfaas.adapter.orchestrate;
 import io.orchestrate.client.Client;
 import io.orchestrate.client.KvObject;
 import io.orchestrate.client.OrchestrateClient;
-import io.orchestrate.client.dao.GenericAsyncDao;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+
+import java.io.IOException;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.io.IOException;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by amoli.ajarekar on 5/11/2015.

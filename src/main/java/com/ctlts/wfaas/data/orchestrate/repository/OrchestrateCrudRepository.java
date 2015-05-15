@@ -14,14 +14,16 @@ import org.springframework.util.Assert;
  * @author mramach
  *
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked"})
 public class OrchestrateCrudRepository<T, ID extends Serializable> implements OrchestrateRepository<T, ID> {
 
-    private EntityMetadata<T, ID> entityMetadata;
+    private EntityMetadata entityMetadata;
+    private RepositoryMetadata metadata;
     private OrchestrateTemplate orchestrateTemplate;
     
     public OrchestrateCrudRepository(RepositoryMetadata metadata, OrchestrateTemplate orchestrateTemplate) {
         this.entityMetadata = new EntityMetadata(metadata.getDomainType());
+        this.metadata = metadata;
         this.orchestrateTemplate = orchestrateTemplate;
     }
 
@@ -52,28 +54,31 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
     @Override
     public T findOne(ID id) {
         Assert.notNull(id, "The given id must not be null!");
-        return (T) orchestrateTemplate.findById((String)id, entityMetadata.getType(), entityMetadata.getCollection());
+        return (T) orchestrateTemplate.findById((String)id, metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override
     public boolean exists(ID id) {
         Assert.notNull(id, "The given id must not be null!");
-        return orchestrateTemplate.exists((String)id, entityMetadata.getType(), entityMetadata.getCollection());
+        return orchestrateTemplate.exists((String)id, metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override
     public Iterable<T> findAll() {
-        return orchestrateTemplate.findAll(entityMetadata.getType(), entityMetadata.getCollection());
+        return (Iterable<T>) orchestrateTemplate.findAll(metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override
     public Iterable<T> findAll(Iterable<ID> ids) {
+//        List<String> idStrings = new ArrayList<String>();
+//        ids.forEach(id -> idStrings.add((String) id));
+//        return orchestrateTemplate.findAll(idStrings, metadata.getDomainType(), entityMetadata.getCollection());
         return null;
     }
 
     @Override
     public long count() {
-        return orchestrateTemplate.count(entityMetadata.getType(), entityMetadata.getCollection());
+        return orchestrateTemplate.count(metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override

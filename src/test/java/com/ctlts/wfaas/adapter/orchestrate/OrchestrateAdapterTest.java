@@ -1,13 +1,13 @@
 package com.ctlts.wfaas.adapter.orchestrate;
 
+import static org.hamcrest.CoreMatchers.*;
+import static org.hamcrest.MatcherAssert.*;
 import io.orchestrate.client.Client;
 import io.orchestrate.client.KvMetadata;
 import io.orchestrate.client.OrchestrateClient;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
 
 /**
  * Created by amoli.ajarekar on 5/11/2015.

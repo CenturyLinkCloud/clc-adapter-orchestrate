@@ -3,6 +3,8 @@
  */
 package com.ctlts.wfaas.data.orchestrate.repository;
 
+import java.util.List;
+
 /**
  * @author mramach
  *
@@ -10,5 +12,7 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 public interface TestEntityQueryDslRespository extends OrchestrateRepository<TestEntity, String> {
     
     public TestEntity findById(String id);
+
+    public List<TestEntity> findByStringProperty(String stringProperty);
 
 }

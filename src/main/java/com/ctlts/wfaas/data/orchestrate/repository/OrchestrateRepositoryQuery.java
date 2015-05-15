@@ -4,6 +4,7 @@
 package com.ctlts.wfaas.data.orchestrate.repository;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
@@ -42,10 +43,15 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
             query.append(eq(p, parameters[idx.incrementAndGet()]));
         });
         
-        Object result = orchestrateTemplate.query(entityMetadata.getCollection(), 
+        List<?> results = (List<?>) orchestrateTemplate.query(entityMetadata.getCollection(), 
                 query.toString(), metadata.getDomainType());
 
-        return result;
+        if(!queryMethod.isCollectionQuery()) {
+            // TODO - Throw exception if we recieve more than one value back in the result set.
+            return results.stream().findFirst().orElse(null);
+        }
+        
+        return results;
         
     }
 

@@ -13,6 +13,9 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -72,42 +75,20 @@ public class OrchestrateTemplate {
         return this.client.kv(collection, id).get(entityClass).get().getValue();
     }
 
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public void setUseSSL(boolean useSSL) {
-        this.useSSL = useSSL;
-    }
-
     public boolean exists(String id, Class<?> entityClass, String collection) {
-        return this.client.searchCollection(collection)
-                .get(entityClass, getIdQuery(id))
-                .get().iterator().hasNext();
+        return !query(collection, getIdQuery(id), entityClass).isEmpty();
     }
 
     public <T> Iterable<T> findAll(Class<T> entityClass, String collection) {
-        SearchResults<T> searchResults = this.client.searchCollection(collection)
-                .get(entityClass, getQuery())
-                .get();
-
-        return StreamSupport.stream(searchResults.spliterator(), false)
-                .map(myObjectResult -> myObjectResult.getKvObject().getValue()).collect(Collectors.toList());
+        return query(collection, getQuery(), entityClass);
     }
 
     public <T> Iterable<T> findAll(List<String> idStrings, Class<T> entityClass, String collection) {
-        SearchResults<T> searchResults = this.client.searchCollection(collection)
-                .get(entityClass, getIdsQuery(idStrings))
-                .get();
-
-        return StreamSupport.stream(searchResults.spliterator(), false)
-                .map(myObjectResult -> myObjectResult.getKvObject().getValue()).collect(Collectors.toList());
+        return query(collection, getIdsQuery(idStrings), entityClass);
     }
 
     public long count(Class<?> entityClass, String collection) {
-        return (this.client.searchCollection(collection)
-                .get(entityClass, getQuery())
-                .get()).getCount();
+        return query(collection, getQuery(), entityClass).size();
     }
 
     public void delete(String id, String collection) {
@@ -118,16 +99,16 @@ public class OrchestrateTemplate {
         client.deleteCollection(collection);
     }
 
-    public void setEndpoint(String endpoint) {
-        this.endpoint = endpoint;
-    }
-    
     public void setPort(int port) {
         this.port = port;
     }
 
     public void setUseSSL(boolean useSSL) {
         this.useSSL = useSSL;
+    }
+
+    public void setEndpoint(String endpoint) {
+        this.endpoint = endpoint;
     }
 
     public void setApiKey(String apiKey) {

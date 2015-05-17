@@ -5,14 +5,13 @@ package com.ctlts.wfaas.data.orchestrate.query;
 
 import java.lang.reflect.Method;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
-import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 
+import com.ctlts.wfaas.data.orchestrate.query.OrchestrateCriteriaBuilder.Criteria;
 import com.ctlts.wfaas.data.orchestrate.repository.EntityMetadata;
 import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateTemplate;
 
@@ -40,35 +39,10 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
     @Override
     public Object execute(Object[] parameters) {
         
-        StringBuffer query = new StringBuffer();
-        AtomicInteger orIdx = new AtomicInteger(-1);
-        AtomicInteger idx = new AtomicInteger(-1);
-        
-        tree.forEach(p -> {
-            
-            if(orIdx.incrementAndGet() > 0) {
-                query.append(" OR ");
-            }
-            
-            StringBuffer expr = new StringBuffer();
-            AtomicInteger exprIdx = new AtomicInteger(-1);
-            
-            p.forEach(c -> {
-                
-                if(exprIdx.incrementAndGet() > 0) {
-                    expr.append(" AND ");
-                }
-                
-                expr.append(eq(c, parameters[idx.incrementAndGet()]));
-                
-            });
-            
-            query.append("(").append(expr).append(")");
-            
-        });
+        Criteria criteria = OrchestrateCriteriaBuilder.create(tree, parameters);
         
         List<?> results = (List<?>) orchestrateTemplate.query(entityMetadata.getCollection(), 
-                query.toString(), metadata.getDomainType());
+                criteria.createQuery(), metadata.getDomainType());
 
         if(!queryMethod.isCollectionQuery()) {
             // TODO - Throw exception if we receive more than one value back in the result set.
@@ -77,10 +51,6 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
         
         return results;
         
-    }
-
-    private String eq(Part part, Object value) {
-        return String.format("%s:\"%s\"", part.getProperty().toDotPath(), String.valueOf(value));
     }
     
     @Override

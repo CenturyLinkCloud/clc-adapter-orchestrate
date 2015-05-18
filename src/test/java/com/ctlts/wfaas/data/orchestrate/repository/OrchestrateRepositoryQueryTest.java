@@ -14,9 +14,11 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.ctlts.wfaas.data.orchestrate.config.EnableOrchestrateRepositories;
 import com.ctlts.wfaas.data.orchestrate.test.OrchestrateMockRule;
 
 /**
@@ -62,6 +64,97 @@ public class OrchestrateRepositoryQueryTest {
         
         assertNotNull("Checking that the result is not null.", found);
         
+    }
+    
+    @Test
+    public void testFindByNestedProperty() {
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("Mark Was Here");
+        
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty("Hello World!");
+        t1.setObjectProperty(n1);
+        
+        repository.save(t1);
+        
+        TestEntity found = repository.findByObjectProperty_StringProperty("Mark Was Here");
+        
+        assertNotNull("Checking that the result is not null.", found);
+        
+    }
+    
+    @Test
+    public void testFindBy_WithAnd() {
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("Mark Was Here");
+        
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty("Hello World!");
+        t1.setObjectProperty(n1);
+        
+        repository.save(t1);
+        
+        TestEntity found = repository.findByStringPropertyAndObjectProperty_StringProperty(
+                "Hello World!", "Mark Was Here");
+        
+        assertNotNull("Checking that the result is not null.", found);
+        
+    }
+    
+    @Test
+    public void testFindBy_WithOr() {
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("Mark Was Here");
+        
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty("Hello World!");
+        t1.setObjectProperty(n1);
+        
+        repository.save(t1);
+        
+        TestEntity found = repository.findByStringPropertyOrObjectProperty_StringProperty(
+                "Hello World!", "Mark Was Not Here");
+        
+        assertNotNull("Checking that the result is not null.", found);
+        
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testFindDistinctBy() {
+        repository.findDistinctByStringProperty("Distinct is not supported.");
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testFindLimitingBy() {
+        repository.findFirst2ByStringProperty("Limiting is not supported.");
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testCountBy() {
+        repository.countByStringProperty("Count is not supported.");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testDeleteBy() {
+        repository.deleteByStringProperty("Delete/Remove is not supported.");
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void findBy_WithPaging() {
+        repository.findByStringProperty("Paging is not supported.", new PageRequest(1, 2));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void findBy_WithSlice() {
+        repository.findById("Slice is not supported.", new PageRequest(1, 2));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testFindBy_WithOrder() {
+        repository.findByStringPropertyOrderByStringPropertyAsc("Order By is not supported.");
     }
     
     @Configuration

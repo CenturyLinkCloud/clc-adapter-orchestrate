@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import com.ctlts.wfaas.data.orchestrate.config.EnableOrchestrateRepositories;
 import com.ctlts.wfaas.data.orchestrate.test.OrchestrateMockRule;
 
 /**

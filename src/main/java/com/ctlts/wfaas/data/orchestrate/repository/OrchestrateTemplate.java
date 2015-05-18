@@ -5,19 +5,15 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 
 import io.orchestrate.client.OrchestrateClient;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-
-import io.orchestrate.client.SearchResults;
-import org.springframework.util.Assert;
-
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.util.Assert;
 
 /**
  * @author mramach
@@ -25,6 +21,8 @@ import java.util.stream.StreamSupport;
  */
 @SuppressWarnings("unchecked")
 public class OrchestrateTemplate {
+    
+    private static final int DEFAULT_TIMEOUT = 30;
     
     private String endpoint = "https://api.ctl-uc1-a.orchestrate.io/v0/";
     private String apiKey;
@@ -52,7 +50,7 @@ public class OrchestrateTemplate {
 
         client.kv(collection, id).put(entity).get();
         
-        return (E)client.kv(collection, id).get(entity.getClass()).get(30, TimeUnit.SECONDS).getValue();
+        return (E)client.kv(collection, id).get(entity.getClass()).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS).getValue();
         
     }
 
@@ -63,7 +61,7 @@ public class OrchestrateTemplate {
 
         List<E> results = new LinkedList<E>();
 
-        client.searchCollection(collection).get(type, query).get(30, TimeUnit.SECONDS).getResults().forEach(sr -> {
+        client.searchCollection(collection).get(type, query).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS).getResults().forEach(sr -> {
             results.add(sr.getKvObject().getValue());
         });
 
@@ -72,7 +70,7 @@ public class OrchestrateTemplate {
     }
 
     public <E> E findById(String id, Class<E> entityClass, String collection) {
-        return this.client.kv(collection, id).get(entityClass).get().getValue();
+        return this.client.kv(collection, id).get(entityClass).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS).getValue();
     }
 
     public boolean exists(String query, Class<?> entityClass, String collection) {
@@ -88,7 +86,7 @@ public class OrchestrateTemplate {
     }
 
     public void delete(String id, String collection) {
-        client.kv(collection, id).delete(Boolean.TRUE).get();
+        client.kv(collection, id).delete(Boolean.TRUE).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
     }
 
     public void deleteAll(String collection) {

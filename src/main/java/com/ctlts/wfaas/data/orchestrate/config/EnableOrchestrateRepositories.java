@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ctlts.wfaas.data.orchestrate.repository;
+package com.ctlts.wfaas.data.orchestrate.config;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

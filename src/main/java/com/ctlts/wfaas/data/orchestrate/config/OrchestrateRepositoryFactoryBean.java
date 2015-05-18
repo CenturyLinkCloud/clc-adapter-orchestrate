@@ -1,13 +1,15 @@
 /**
  * 
  */
-package com.ctlts.wfaas.data.orchestrate.repository;
+package com.ctlts.wfaas.data.orchestrate.config;
 
 import java.io.Serializable;
 
 import org.springframework.data.repository.Repository;
 import org.springframework.data.repository.core.support.RepositoryFactoryBeanSupport;
 import org.springframework.data.repository.core.support.RepositoryFactorySupport;
+
+import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateTemplate;
 
 /**
  * @author mramach

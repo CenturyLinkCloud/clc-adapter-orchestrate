@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ctlts.wfaas.data.orchestrate.repository;
+package com.ctlts.wfaas.data.orchestrate.config;
 
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.data.repository.config.AnnotationRepositoryConfigurationSource;

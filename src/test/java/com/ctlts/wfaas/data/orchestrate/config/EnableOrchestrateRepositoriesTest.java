@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.ctlts.wfaas.data.orchestrate.repository;
+package com.ctlts.wfaas.data.orchestrate.config;
 
 import static org.junit.Assert.*;
 
@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+
+import com.ctlts.wfaas.data.orchestrate.config.EnableOrchestrateRepositories;
+import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateTemplate;
+import com.ctlts.wfaas.data.orchestrate.repository.TestEntityRespository;
 
 /**
  * @author mramach

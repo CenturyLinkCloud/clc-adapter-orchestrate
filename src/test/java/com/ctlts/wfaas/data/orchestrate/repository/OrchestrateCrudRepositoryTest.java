@@ -136,6 +136,7 @@ public class OrchestrateCrudRepositoryTest {
         List<TestEntity> actual = (List<TestEntity>) repository.findAll();
 
         assertNotNull("Checking that the result is not null.", actual);
+        assertEquals(2, actual.size());
 
         Map<String, TestEntity> expected =
                 values.stream().collect(toMap(TestEntity::getId,
@@ -145,7 +146,6 @@ public class OrchestrateCrudRepositoryTest {
     }
 
     @Test
-    @Ignore
     public void testExists() {
 
         List<TestEntity> values = Arrays.asList(1, 2).stream()
@@ -200,6 +200,70 @@ public class OrchestrateCrudRepositoryTest {
             assertEquals(values.get(1).getId(), testEntity.getId());
             assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
         });
+    }
+
+    @Test
+    public void testDeleteEntity() {
+
+        List<TestEntity> values = Arrays.asList(1, 2).stream()
+                .map(v -> {
+
+                    TestEntity t = new TestEntity();
+                    t.setStringProperty(String.format("Hello %s time(s)", v));
+                    return t;
+
+                }).collect(Collectors.toList());
+        Iterable<TestEntity> expected = repository.save(values);
+
+        repository.delete(values.get(0));
+        Iterable<TestEntity> actual = repository.findAll();
+
+        assertNotNull("Checking that the result is not null.", actual);
+        actual.forEach(testEntity -> {
+            assertEquals(values.get(1).getId(), testEntity.getId());
+            assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
+        });
+    }
+
+    @Test
+    public void testDeleteEntities() {
+
+        List<TestEntity> values = Arrays.asList(1, 2, 3).stream()
+                .map(v -> {
+
+                    TestEntity t = new TestEntity();
+                    t.setStringProperty(String.format("Hello %s time(s)", v));
+                    return t;
+
+                }).collect(Collectors.toList());
+        Iterable<TestEntity> expected = repository.save(values);
+
+        repository.delete(Arrays.asList(values.get(0), values.get(2)));
+        Iterable<TestEntity> actual = repository.findAll();
+
+        assertNotNull("Checking that the result is not null.", actual);
+        actual.forEach(testEntity -> {
+            assertEquals(values.get(1).getId(), testEntity.getId());
+            assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
+        });
+    }
+
+    @Test
+    public void testDeleteAllEntities() {
+
+        List<TestEntity> values = Arrays.asList(1, 2, 3).stream()
+                .map(v -> {
+
+                    TestEntity t = new TestEntity();
+                    t.setStringProperty(String.format("Hello %s time(s)", v));
+                    return t;
+
+                }).collect(Collectors.toList());
+        Iterable<TestEntity> expected = repository.save(values);
+
+        repository.deleteAll();
+        Iterable<TestEntity> actual = repository.findAll();
+        assertFalse("Checking that no entities were returned", actual.iterator().hasNext());
     }
 
     @Configuration

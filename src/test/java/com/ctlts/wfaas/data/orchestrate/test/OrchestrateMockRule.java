@@ -309,6 +309,7 @@ public class OrchestrateMockRule extends WireMockRule {
             Document doc = new Document();
             doc.add(new StringField(VAR_COLLECTION, collection, Field.Store.YES));
             doc.add(new StringField(VAR_ID, id, Field.Store.YES));
+            doc.add(new TextField("@path.key", id, Field.Store.YES));
             doc.add(new StringField(VAR_VALUE, value, Field.Store.YES));
             
             try {

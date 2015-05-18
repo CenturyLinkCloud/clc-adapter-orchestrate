@@ -107,9 +107,11 @@ public class OrchestrateCrudRepositoryTest {
                 }).collect(Collectors.toList());
         repository.save(values);
 
-        Iterable<TestEntity> actual = repository.findAll(values.stream().map(TestEntity::getId).collect(Collectors.toList()));
+        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
+                values.stream().map(TestEntity::getId).collect(Collectors.toList()));
 
         assertNotNull("Checking that the result is not null.", actual);
+        assertEquals(2, actual.size());
 
         Map<String, TestEntity> expected =
                 values.stream().collect(toMap(TestEntity::getId,
@@ -131,7 +133,7 @@ public class OrchestrateCrudRepositoryTest {
                 }).collect(Collectors.toList());
         repository.save(values);
 
-        Iterable<TestEntity> actual = repository.findAll();
+        List<TestEntity> actual = (List<TestEntity>) repository.findAll();
 
         assertNotNull("Checking that the result is not null.", actual);
 

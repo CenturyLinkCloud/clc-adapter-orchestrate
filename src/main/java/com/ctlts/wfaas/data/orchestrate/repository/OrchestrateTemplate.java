@@ -8,12 +8,17 @@ import io.orchestrate.client.OrchestrateClient;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.springframework.util.Assert;
+
+import com.ctlts.wfaas.data.orchestrate.security.EncryptedDeserializer;
+import com.ctlts.wfaas.data.orchestrate.security.EncryptedSerializer;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * @author mramach
@@ -32,9 +37,21 @@ public class OrchestrateTemplate {
     
     @PostConstruct
     public void postConstruct() {
-        client = OrchestrateClient.builder(apiKey).host(endpoint)
-                .port(port).useSSL(useSSL)
-                    .build();
+        
+        // Initialize the object mapper and register our custom serializer.
+        SimpleModule module = new SimpleModule("Encrypted", Version.unknownVersion());
+        module.addSerializer(String.class, new EncryptedSerializer());
+        module.addDeserializer(String.class, new EncryptedDeserializer());
+        
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(module);
+        
+        client = OrchestrateClient.builder(apiKey)
+                .mapper(mapper)
+                .host(endpoint)
+                .port(port)
+                .useSSL(useSSL)
+                .build();
     }
 
     @PreDestroy
@@ -73,20 +90,16 @@ public class OrchestrateTemplate {
         return this.client.kv(collection, id).get(entityClass).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS).getValue();
     }
 
-    public boolean exists(String id, Class<?> entityClass, String collection) {
-        return !query(collection, getIdQuery(id), entityClass).isEmpty();
+    public boolean exists(String query, Class<?> entityClass, String collection) {
+        return !query(collection, query, entityClass).isEmpty();
     }
 
-    public <T> Iterable<T> findAll(Class<T> entityClass, String collection) {
-        return query(collection, getQuery(), entityClass);
+    public <T> Iterable<T> findAll(String query, Class<T> entityClass, String collection) {
+        return query(collection, query, entityClass);
     }
 
-    public <T> Iterable<T> findAll(List<String> idStrings, Class<T> entityClass, String collection) {
-        return query(collection, getIdsQuery(idStrings), entityClass);
-    }
-
-    public long count(Class<?> entityClass, String collection) {
-        return query(collection, getQuery(), entityClass).size();
+    public long count(String query, Class<?> entityClass, String collection) {
+        return query(collection, query, entityClass).size();
     }
 
     public void delete(String id, String collection) {
@@ -111,18 +124,6 @@ public class OrchestrateTemplate {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
-    }
-
-    private String getIdQuery(String id) {
-        return "@path.key:" + id;
-    }
-
-    private String getIdsQuery(List<String> ids) {
-        return "@path.key:" + ids.stream().collect(Collectors.joining(" "));
-    }
-
-    private String getQuery() {
-        return "*";
     }
 
 }

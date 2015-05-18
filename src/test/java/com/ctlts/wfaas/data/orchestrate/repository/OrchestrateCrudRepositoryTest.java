@@ -3,8 +3,8 @@
  */
 package com.ctlts.wfaas.data.orchestrate.repository;
 
-import static java.util.stream.Collectors.toMap;
-import static org.hamcrest.CoreMatchers.equalTo;
+import static java.util.stream.Collectors.*;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;

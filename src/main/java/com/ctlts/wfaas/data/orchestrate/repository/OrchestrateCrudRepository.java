@@ -112,8 +112,7 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
     }
 
     private String getIdsQuery(List<String> ids) {
-        String result = ids.stream().map(id -> String.format("@path.key:\"%s\"", id)).collect(Collectors.joining(" "));
-        return result;
+        return ids.stream().map(id -> String.format("@path.key:\"%s\"", id)).collect(Collectors.joining(" "));
     }
 
     private String getQuery() {

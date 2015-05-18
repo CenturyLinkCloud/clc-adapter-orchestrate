@@ -8,12 +8,17 @@ import io.orchestrate.client.OrchestrateClient;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 import org.springframework.util.Assert;
+
+import com.ctlts.wfaas.data.orchestrate.security.EncryptedDeserializer;
+import com.ctlts.wfaas.data.orchestrate.security.EncryptedSerializer;
+import com.fasterxml.jackson.core.Version;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * @author mramach
@@ -32,9 +37,21 @@ public class OrchestrateTemplate {
     
     @PostConstruct
     public void postConstruct() {
-        client = OrchestrateClient.builder(apiKey).host(endpoint)
-                .port(port).useSSL(useSSL)
-                    .build();
+        
+        // Initialize the object mapper and register our custom serializer.
+        SimpleModule module = new SimpleModule("Encrypted", Version.unknownVersion());
+        module.addSerializer(String.class, new EncryptedSerializer());
+        module.addDeserializer(String.class, new EncryptedDeserializer());
+        
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(module);
+        
+        client = OrchestrateClient.builder(apiKey)
+                .mapper(mapper)
+                .host(endpoint)
+                .port(port)
+                .useSSL(useSSL)
+                .build();
     }
 
     @PreDestroy

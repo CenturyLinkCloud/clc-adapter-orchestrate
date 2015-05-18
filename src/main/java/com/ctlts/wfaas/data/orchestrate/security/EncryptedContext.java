@@ -7,6 +7,7 @@ import java.util.Base64;
 import java.util.Optional;
 
 import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -18,6 +19,7 @@ public class EncryptedContext {
     
     private static final ThreadLocal<EncryptedContext> INSTANCE = new InheritableThreadLocal<EncryptedContext>();
 
+    private byte[] encodedKey;
     private SecretKey key;
     
     /**
@@ -26,6 +28,7 @@ public class EncryptedContext {
      * @param key The Base 64 encoded key to use in cipher operations.
      */
     public EncryptedContext(byte[] key) {
+        this.encodedKey = key;
         this.key = new SecretKeySpec(Base64.getDecoder().decode(key), "AES");
     }
 
@@ -67,6 +70,38 @@ public class EncryptedContext {
             
         } catch (Exception e) {
             throw new EncryptedException("Failed while attempting to encrypt value.", e);
+        }
+        
+    }
+    
+    /**
+     * @return the Base64 encoded key value.
+     */
+    public byte[] getEncodedKey() {
+        return encodedKey;
+    }
+
+    /**
+     * Creates a new encryption context, initializing a new key for cipher operations.
+     * 
+     * @return {@link EncryptedContext} A new instance.
+     */
+    public static EncryptedContext create() {
+        
+        try {
+            
+            // Initialize a secret key for the instance.
+            KeyGenerator keyGen = KeyGenerator.getInstance("AES");
+            keyGen.init(128);
+            
+            SecretKey key = keyGen.generateKey();
+            
+            byte[] encodedKey = Base64.getEncoder().encode(key.getEncoded());
+            
+            return new EncryptedContext(encodedKey);
+            
+        } catch (Exception e) {
+            throw new EncryptedException("Failed while attempting to generate a ne encryption key.", e);
         }
         
     }

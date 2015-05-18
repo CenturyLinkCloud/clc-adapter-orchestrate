@@ -5,11 +5,6 @@ package com.ctlts.wfaas.data.orchestrate.security;
 
 import static org.junit.Assert.*;
 
-import java.util.Base64;
-
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,15 +32,7 @@ public class EncryptedTest {
         mapper = new ObjectMapper();
         mapper.registerModule(module);
         
-        // Initialize a secret key for the test.
-        KeyGenerator keyGen = KeyGenerator.getInstance("AES");
-        keyGen.init(128);
-        
-        SecretKey key = keyGen.generateKey();
-        
-        byte[] encodedKey = Base64.getEncoder().encode(key.getEncoded());
-        
-        EncryptedContext.setInstance(new EncryptedContext(encodedKey));
+        EncryptedContext.setInstance(EncryptedContext.create());
         
     }
     

@@ -203,6 +203,7 @@ public class OrchestrateMockRule extends WireMockRule {
                 Analyzer analyzer = new StandardAnalyzer();
                 TopScoreDocCollector collector = TopScoreDocCollector.create(10);
                 QueryParser parser = new QueryParser(VAR_VALUE, analyzer);
+                parser.setAllowLeadingWildcard(true);
                 
                 String queryString = URLDecoder.decode(queryParam.firstValue(), "UTF-8");
                 

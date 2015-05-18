@@ -38,6 +38,34 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
 
     @Override
     public Object execute(Object[] parameters) {
+
+        if(tree.isDistinct()) {
+            throw new UnsupportedOperationException("Use of Distinct in dynamic queries is not supported.");
+        }
+        
+        if(tree.isLimiting()) {
+            throw new UnsupportedOperationException("Use of limiting in dynamic queries is not supported.");
+        }
+        
+        if(tree.isCountProjection()) {
+            throw new UnsupportedOperationException("Use of Count in dynamic queries is not supported.");
+        }
+        
+        if(tree.isDelete()) {
+            throw new UnsupportedOperationException("Use of Delete or Remove in dynamic queries is not supported.");
+        }
+
+        if(queryMethod.isSliceQuery()) {
+            throw new UnsupportedOperationException("Slice in dynamic queries is not supported.");
+        }
+        
+        if(queryMethod.isPageQuery()) {
+            throw new UnsupportedOperationException("Paging in dynamic queries is not supported.");
+        }
+
+        if(tree.getSort() != null) {
+            throw new UnsupportedOperationException("Order By in dynamic queries is not supported.");
+        }
         
         Criteria criteria = OrchestrateCriteriaBuilder.create(tree, parameters);
         

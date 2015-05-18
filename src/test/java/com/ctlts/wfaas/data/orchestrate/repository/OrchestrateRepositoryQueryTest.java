@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -119,6 +120,41 @@ public class OrchestrateRepositoryQueryTest {
         
         assertNotNull("Checking that the result is not null.", found);
         
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testFindDistinctBy() {
+        repository.findDistinctByStringProperty("Distinct is not supported.");
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testFindLimitingBy() {
+        repository.findFirst2ByStringProperty("Limiting is not supported.");
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testCountBy() {
+        repository.countByStringProperty("Count is not supported.");
+    }
+
+    @Test(expected = UnsupportedOperationException.class)
+    public void testDeleteBy() {
+        repository.deleteByStringProperty("Delete/Remove is not supported.");
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void findBy_WithPaging() {
+        repository.findByStringProperty("Paging is not supported.", new PageRequest(1, 2));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void findBy_WithSlice() {
+        repository.findById("Slice is not supported.", new PageRequest(1, 2));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void testFindBy_WithOrder() {
+        repository.findByStringPropertyOrderByStringPropertyAsc("Order By is not supported.");
     }
     
     @Configuration

@@ -196,6 +196,7 @@ public class OrchestrateCrudRepositoryTest {
         Iterable<TestEntity> actual = repository.findAll();
 
         assertNotNull("Checking that the result is not null.", actual);
+        assertTrue(actual.iterator().hasNext());
         actual.forEach(testEntity -> {
             assertEquals(values.get(1).getId(), testEntity.getId());
             assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
@@ -219,6 +220,7 @@ public class OrchestrateCrudRepositoryTest {
         Iterable<TestEntity> actual = repository.findAll();
 
         assertNotNull("Checking that the result is not null.", actual);
+        assertTrue(actual.iterator().hasNext());
         actual.forEach(testEntity -> {
             assertEquals(values.get(1).getId(), testEntity.getId());
             assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
@@ -242,6 +244,7 @@ public class OrchestrateCrudRepositoryTest {
         Iterable<TestEntity> actual = repository.findAll();
 
         assertNotNull("Checking that the result is not null.", actual);
+        assertTrue(actual.iterator().hasNext());
         actual.forEach(testEntity -> {
             assertEquals(values.get(1).getId(), testEntity.getId());
             assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());

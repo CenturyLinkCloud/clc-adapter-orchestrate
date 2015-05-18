@@ -317,6 +317,7 @@ public class OrchestrateMockRule extends WireMockRule {
                         new IndexWriterConfig(new StandardAnalyzer()))) {
 
                     index.deleteAll();
+                    index.commit();
 
                 }
 

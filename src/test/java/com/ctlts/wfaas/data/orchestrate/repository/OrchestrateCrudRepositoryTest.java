@@ -189,17 +189,16 @@ public class OrchestrateCrudRepositoryTest {
                     return t;
 
                 }).collect(Collectors.toList());
-        Iterable<TestEntity> expected = repository.save(values);
-
+        
+        repository.save(values);
         repository.delete(values.get(0).getId());
-        Iterable<TestEntity> actual = repository.findAll();
+        
+        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
+                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
 
         assertNotNull("Checking that the result is not null.", actual);
-        assertTrue(actual.iterator().hasNext());
-        actual.forEach(testEntity -> {
-            assertEquals(values.get(1).getId(), testEntity.getId());
-            assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
-        });
+        assertEquals(1, actual.size());
+        
     }
 
     @Test
@@ -217,15 +216,12 @@ public class OrchestrateCrudRepositoryTest {
         repository.save(values);
         repository.delete(values.get(0));
         
-        Iterable<TestEntity> actual = repository.findAll(
+        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
                 values.stream().map(v -> v.getId()).collect(Collectors.toList()));
 
         assertNotNull("Checking that the result is not null.", actual);
-        assertTrue(actual.iterator().hasNext());
-        actual.forEach(testEntity -> {
-            assertEquals(values.get(1).getId(), testEntity.getId());
-            assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
-        });
+        assertEquals(1, actual.size());
+
     }
 
     @Test
@@ -243,16 +239,12 @@ public class OrchestrateCrudRepositoryTest {
         repository.save(values);
         repository.delete(Arrays.asList(values.get(0), values.get(2)));
         
-        Iterable<TestEntity> actual = repository.findAll(
+        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
                 values.stream().map(v -> v.getId()).collect(Collectors.toList()));
 
         assertNotNull("Checking that the result is not null.", actual);
-        assertTrue(actual.iterator().hasNext());
-        actual.forEach(testEntity -> {
-            System.out.println(String.format("%s %s", values.get(1).getId(), testEntity.getId()));
-            assertEquals(values.get(1).getId(), testEntity.getId());
-            assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
-        });
+        assertEquals(1, actual.size());
+
     }
 
     @Test
@@ -270,10 +262,10 @@ public class OrchestrateCrudRepositoryTest {
         repository.save(values);
         repository.deleteAll();
         
-        Iterable<TestEntity> actual = repository.findAll(
+        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
                 values.stream().map(v -> v.getId()).collect(Collectors.toList()));
         
-        assertFalse("Checking that no entities were returned", actual.iterator().hasNext());
+        assertEquals("Checking that no entities were returned", 0, actual.size());
         
     }
 

@@ -107,7 +107,7 @@ public class OrchestrateTemplate {
     }
 
     public void deleteAll(String collection) {
-        client.deleteCollection(collection);
+        client.deleteCollection(collection).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
     }
 
     public void setPort(int port) {

@@ -219,45 +219,34 @@ public class OrchestrateCrudRepositoryTest {
     @Test
     public void testDeleteEntities() {
 
-        List<TestEntity> values = Arrays.asList(1, 2, 3).stream()
-                .map(v -> {
-
-                    TestEntity t = new TestEntity();
-                    t.setStringProperty(String.format("Hello %s time(s)", v));
-                    return t;
-
-                }).collect(Collectors.toList());
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty(String.format("1"));
         
-        repository.save(values);
-        repository.delete(Arrays.asList(values.get(0), values.get(2)));
+        TestEntity t2 = new TestEntity();
+        t2.setStringProperty(String.format("1"));
         
-        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
-                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
-
-        assertNotNull("Checking that the result is not null.", actual);
-        assertEquals(1, actual.size());
+        repository.save(Arrays.asList(t1, t2));
+        repository.delete(Arrays.asList(t1, t2));
+        
+        assertNull("Checking that the result is null.", repository.findById(t1.getId()));
+        assertNull("Checking that the result is null.", repository.findById(t2.getId()));
 
     }
 
     @Test
     public void testDeleteAllEntities() {
 
-        List<TestEntity> values = Arrays.asList(1, 2, 3).stream()
-                .map(v -> {
-
-                    TestEntity t = new TestEntity();
-                    t.setStringProperty(String.format("Hello %s time(s)", v));
-                    return t;
-
-                }).collect(Collectors.toList());
+        TestEntity t1 = new TestEntity();
+        t1.setStringProperty(String.format("1"));
         
-        repository.save(values);
+        TestEntity t2 = new TestEntity();
+        t2.setStringProperty(String.format("1"));
+        
+        repository.save(Arrays.asList(t1, t2));
         repository.deleteAll();
         
-        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
-                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
-        
-        assertEquals("Checking that no entities were returned", 0, actual.size());
+        assertNull("Checking that the result is null.", repository.findById(t1.getId()));
+        assertNull("Checking that the result is null.", repository.findById(t2.getId()));
         
     }
 

@@ -204,23 +204,15 @@ public class OrchestrateCrudRepositoryTest {
     @Test
     public void testDeleteEntity() {
 
-        List<TestEntity> values = Arrays.asList(1, 2).stream()
-                .map(v -> {
-
-                    TestEntity t = new TestEntity();
-                    t.setStringProperty(String.format("Hello %s time(s)", v));
-                    return t;
-
-                }).collect(Collectors.toList());
+        TestEntity t = new TestEntity();
+        t.setStringProperty(String.format("Hello World!"));
         
-        repository.save(values);
-        repository.delete(values.get(0));
+        repository.save(t);
+        repository.delete(Arrays.asList(t));
         
-        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
-                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
+        TestEntity actual = repository.findById(t.getId());
 
-        assertNotNull("Checking that the result is not null.", actual);
-        assertEquals(1, actual.size());
+        assertNull("Checking that the result is null.", actual);
 
     }
 

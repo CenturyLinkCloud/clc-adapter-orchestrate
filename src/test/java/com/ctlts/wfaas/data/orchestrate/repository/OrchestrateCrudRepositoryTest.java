@@ -214,10 +214,12 @@ public class OrchestrateCrudRepositoryTest {
                     return t;
 
                 }).collect(Collectors.toList());
-        Iterable<TestEntity> expected = repository.save(values);
-
+        
+        repository.save(values);
         repository.delete(values.get(0));
-        Iterable<TestEntity> actual = repository.findAll();
+        
+        Iterable<TestEntity> actual = repository.findAll(
+                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
 
         assertNotNull("Checking that the result is not null.", actual);
         assertTrue(actual.iterator().hasNext());
@@ -238,10 +240,12 @@ public class OrchestrateCrudRepositoryTest {
                     return t;
 
                 }).collect(Collectors.toList());
-        Iterable<TestEntity> expected = repository.save(values);
-
+        
+        repository.save(values);
         repository.delete(Arrays.asList(values.get(0), values.get(2)));
-        Iterable<TestEntity> actual = repository.findAll();
+        
+        Iterable<TestEntity> actual = repository.findAll(
+                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
 
         assertNotNull("Checking that the result is not null.", actual);
         assertTrue(actual.iterator().hasNext());
@@ -262,11 +266,15 @@ public class OrchestrateCrudRepositoryTest {
                     return t;
 
                 }).collect(Collectors.toList());
-        Iterable<TestEntity> expected = repository.save(values);
-
+        
+        repository.save(values);
         repository.deleteAll();
-        Iterable<TestEntity> actual = repository.findAll();
+        
+        Iterable<TestEntity> actual = repository.findAll(
+                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
+        
         assertFalse("Checking that no entities were returned", actual.iterator().hasNext());
+        
     }
 
     @Configuration

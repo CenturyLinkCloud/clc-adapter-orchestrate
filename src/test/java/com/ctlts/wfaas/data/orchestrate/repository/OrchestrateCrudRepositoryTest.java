@@ -179,29 +179,6 @@ public class OrchestrateCrudRepositoryTest {
     }
 
     @Test
-    public void testDeleteById() {
-
-        List<TestEntity> values = Arrays.asList(1, 2).stream()
-                .map(v -> {
-
-                    TestEntity t = new TestEntity();
-                    t.setStringProperty(String.format("Hello %s time(s)", v));
-                    return t;
-
-                }).collect(Collectors.toList());
-        
-        repository.save(values);
-        repository.delete(values.get(0).getId());
-        
-        List<TestEntity> actual = (List<TestEntity>) repository.findAll(
-                values.stream().map(v -> v.getId()).collect(Collectors.toList()));
-
-        assertNotNull("Checking that the result is not null.", actual);
-        assertEquals(1, actual.size());
-        
-    }
-
-    @Test
     public void testDeleteEntity() {
 
         TestEntity t = new TestEntity();
@@ -223,7 +200,7 @@ public class OrchestrateCrudRepositoryTest {
         t1.setStringProperty(String.format("1"));
         
         TestEntity t2 = new TestEntity();
-        t2.setStringProperty(String.format("1"));
+        t2.setStringProperty(String.format("2"));
         
         repository.save(Arrays.asList(t1, t2));
         repository.delete(Arrays.asList(t1, t2));
@@ -240,7 +217,7 @@ public class OrchestrateCrudRepositoryTest {
         t1.setStringProperty(String.format("1"));
         
         TestEntity t2 = new TestEntity();
-        t2.setStringProperty(String.format("1"));
+        t2.setStringProperty(String.format("2"));
         
         repository.save(Arrays.asList(t1, t2));
         repository.deleteAll();

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -250,6 +249,7 @@ public class OrchestrateCrudRepositoryTest {
         assertNotNull("Checking that the result is not null.", actual);
         assertTrue(actual.iterator().hasNext());
         actual.forEach(testEntity -> {
+            System.out.println(String.format("%s %s", values.get(1).getId(), testEntity.getId()));
             assertEquals(values.get(1).getId(), testEntity.getId());
             assertEquals(values.get(1).getStringProperty(), testEntity.getStringProperty());
         });

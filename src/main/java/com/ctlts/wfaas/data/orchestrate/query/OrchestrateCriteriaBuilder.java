@@ -5,6 +5,8 @@ package com.ctlts.wfaas.data.orchestrate.query;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.springframework.data.repository.query.Parameter;
+import org.springframework.data.repository.query.Parameters;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 import org.springframework.data.repository.query.parser.PartTree.OrPart;
@@ -15,7 +17,7 @@ import org.springframework.data.repository.query.parser.PartTree.OrPart;
  */
 public class OrchestrateCriteriaBuilder {
     
-    public static Criteria create(PartTree tree, Object[] parameters) {
+    public static Criteria create(PartTree tree, Parameters<?,?> parameters) {
         
         AtomicInteger idx = new AtomicInteger(0);
         Criteria base = null;
@@ -36,19 +38,24 @@ public class OrchestrateCriteriaBuilder {
         
     }
     
-    public static Criteria create(OrPart p, AtomicInteger idx, Object[] parameters) {
+    public static Criteria create(OrPart p, AtomicInteger idx, Parameters<?,?> parameters) {
         return new CompoundCriteria(p, idx, parameters);
     }
     
-    public static Criteria create(Part p, AtomicInteger idx, Object[] parameters) {
+    public static Criteria create(Part p, AtomicInteger idx, Parameters<?,?> parameters) {
         return new ExpressionCriteria(p, idx, parameters);
     }
     
     public static abstract class Criteria {
         
         private Continuation continuation;
+        private Parameters<?,?> parameters; 
         
-        public Criteria or(OrPart p, AtomicInteger idx, Object[] parameters) {
+        public Criteria(Parameters<?,?> parameters) {
+            this.parameters = parameters;
+        }
+        
+        public Criteria or(OrPart p, AtomicInteger idx, Parameters<?,?> parameters) {
             
             Criteria next = OrchestrateCriteriaBuilder.create(p, idx, parameters);
             continuation = new Continuation("OR", next);
@@ -57,7 +64,7 @@ public class OrchestrateCriteriaBuilder {
             
         }
 
-        public Criteria and(Part p, AtomicInteger idx, Object[] parameters) {
+        public Criteria and(Part p, AtomicInteger idx, Parameters<?,?> parameters) {
             
             Criteria next = OrchestrateCriteriaBuilder.create(p, idx, parameters);
             continuation = new Continuation("AND", next);
@@ -69,8 +76,12 @@ public class OrchestrateCriteriaBuilder {
         public Continuation getContinuation() {
             return continuation;
         }
-
-        public abstract String createQuery();
+        
+        public OrchestrateQuery createQuery() {
+            return new OrchestrateQuery(createStatement(), parameters);
+        }
+        
+        public abstract String createStatement();
 
     }
     
@@ -78,7 +89,9 @@ public class OrchestrateCriteriaBuilder {
         
         private Criteria firstChild = null;
 
-        public CompoundCriteria(OrPart p, AtomicInteger idx, Object[] parameters) {
+        public CompoundCriteria(OrPart p, AtomicInteger idx, Parameters<?,?> parameters) {
+            
+            super(parameters);
             
             Criteria child = null;
             
@@ -96,9 +109,9 @@ public class OrchestrateCriteriaBuilder {
         }
 
         @Override
-        public String createQuery() {
+        public String createStatement() {
             
-            String query = String.format("(%s)", firstChild.createQuery());
+            String query = String.format("(%s)", firstChild.createStatement());
             
             return getContinuation() != null ? String.format(
                     "%s %s", query, getContinuation().createQuery()) : query;
@@ -110,17 +123,19 @@ public class OrchestrateCriteriaBuilder {
     public static class ExpressionCriteria extends Criteria {
 
         private Part part;
-        private Object parameter;
+        private Parameter parameter;
         
-        public ExpressionCriteria(Part p, AtomicInteger idx, Object[] parameters) {
+        public ExpressionCriteria(Part p, AtomicInteger idx, Parameters<?,?> parameters) {
+            super(parameters);
             this.part = p;
-            this.parameter = parameters[idx.getAndIncrement()];
+            this.parameter = parameters.getBindableParameter(idx.getAndIncrement());
         }
         
         @Override
-        public String createQuery() {
+        public String createStatement() {
             
-            String query = String.format("%s:\"%s\"", part.getProperty().toDotPath(), parameter);
+            String query = String.format("%s:\"%s\"", part.getProperty().toDotPath(),
+                    parameter.getPlaceholder());
         
             return getContinuation() != null ? String.format(
                     "%s %s", query, getContinuation().createQuery()) : query;
@@ -140,7 +155,7 @@ public class OrchestrateCriteriaBuilder {
         }
         
         public String createQuery() {
-            return String.format("%s %s", conjunction, next.createQuery());
+            return String.format("%s %s", conjunction, next.createStatement());
         }
         
     }

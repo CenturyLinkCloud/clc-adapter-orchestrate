@@ -7,6 +7,7 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
+import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.PartTree;
@@ -66,12 +67,8 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
             throw new UnsupportedOperationException("Order By in dynamic queries is not supported.");
         }
         
-        OrchestrateQuery query = OrchestrateCriteriaBuilder.
-                create(tree, queryMethod.getParameters()).createQuery();
-        
-        queryMethod.getParameters().forEach(p -> {
-            query.setParameter(p.getIndex(), parameters[p.getIndex()]);
-        });
+        Query query = new OrchestrateQueryCreator(tree, new ParametersParameterAccessor(
+                queryMethod.getParameters(), parameters)).createQuery();
         
         List<?> results = (List<?>) orchestrateTemplate.query(entityMetadata.getCollection(), 
                 query, metadata.getDomainType());

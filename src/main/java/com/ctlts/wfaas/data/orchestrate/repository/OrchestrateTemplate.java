@@ -14,6 +14,7 @@ import javax.annotation.PreDestroy;
 
 import org.springframework.util.Assert;
 
+import com.ctlts.wfaas.data.orchestrate.query.Query;
 import com.ctlts.wfaas.data.orchestrate.security.EncryptedDeserializer;
 import com.ctlts.wfaas.data.orchestrate.security.EncryptedSerializer;
 import com.fasterxml.jackson.core.Version;
@@ -71,6 +72,10 @@ public class OrchestrateTemplate {
         
     }
 
+    public <E> List<E> query(String collection, Query query, Class<E> type) {
+        return query(collection, query.toString(), type);
+    }
+    
     public <E> List<E> query(String collection, String query, Class<E> type) {
 
         Assert.hasLength(collection, "The collection can not be null or an empty String.");

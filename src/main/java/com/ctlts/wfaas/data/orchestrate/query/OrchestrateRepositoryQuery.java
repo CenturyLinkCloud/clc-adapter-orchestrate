@@ -7,11 +7,11 @@ import java.lang.reflect.Method;
 import java.util.List;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
+import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.RepositoryQuery;
 import org.springframework.data.repository.query.parser.PartTree;
 
-import com.ctlts.wfaas.data.orchestrate.query.OrchestrateCriteriaBuilder.Criteria;
 import com.ctlts.wfaas.data.orchestrate.repository.EntityMetadata;
 import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateTemplate;
 
@@ -67,13 +67,13 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
             throw new UnsupportedOperationException("Order By in dynamic queries is not supported.");
         }
         
-        Criteria criteria = OrchestrateCriteriaBuilder.create(tree, parameters);
+        Query query = new OrchestrateQueryCreator(tree, new ParametersParameterAccessor(
+                queryMethod.getParameters(), parameters)).createQuery();
         
         List<?> results = (List<?>) orchestrateTemplate.query(entityMetadata.getCollection(), 
-                criteria.createQuery(), metadata.getDomainType());
+                query, metadata.getDomainType());
 
         if(!queryMethod.isCollectionQuery()) {
-            // TODO - Throw exception if we receive more than one value back in the result set.
             return results.stream().findFirst().orElse(null);
         }
         

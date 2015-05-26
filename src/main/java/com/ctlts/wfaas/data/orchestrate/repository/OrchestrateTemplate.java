@@ -3,6 +3,7 @@
  */
 package com.ctlts.wfaas.data.orchestrate.repository;
 
+import io.orchestrate.client.KvObject;
 import io.orchestrate.client.OrchestrateClient;
 
 import java.util.LinkedList;
@@ -92,7 +93,11 @@ public class OrchestrateTemplate {
     }
 
     public <E> E findById(String id, Class<E> entityClass, String collection) {
-        return this.client.kv(collection, id).get(entityClass).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS).getValue();
+        
+        KvObject<E> result = this.client.kv(collection, id).get(entityClass).get(DEFAULT_TIMEOUT, TimeUnit.SECONDS);
+        
+        return result != null ? result.getValue() : null;
+        
     }
 
     public boolean exists(String query, Class<?> entityClass, String collection) {

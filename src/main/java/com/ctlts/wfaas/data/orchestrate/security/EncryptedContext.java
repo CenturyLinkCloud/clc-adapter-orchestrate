@@ -69,7 +69,7 @@ public class EncryptedContext {
             return new String(c.doFinal(Base64.getDecoder().decode(value)));
             
         } catch (Exception e) {
-            throw new EncryptedException("Failed while attempting to encrypt value.", e);
+            throw new EncryptedException("Failed while attempting to decrypt value.", e);
         }
         
     }

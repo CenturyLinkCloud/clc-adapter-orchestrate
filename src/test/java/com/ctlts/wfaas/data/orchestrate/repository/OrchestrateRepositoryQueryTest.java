@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,30 @@ public class OrchestrateRepositoryQueryTest {
     
     @Autowired
     private TestEntityQueryDslRespository repository;
+    
+    /**
+     * Because of an issue with wiremock, specifically related to PUT operations
+     * following GET operations, I'm adding this before block. If the save op fails,
+     * it should only fail the first time.
+     */
+    @Before
+    public void before() {
+        
+        TestEntity e = new TestEntity();
+        
+        try {
+            
+            repository.save(e);
+            
+        } catch (Exception e1) {}
+        
+        try {
+            
+            repository.delete(e);
+            
+        } catch (Exception e1) {}
+        
+    }
     
     @Test
     public void testFindByProperty_FindOne() {
@@ -165,7 +190,7 @@ public class OrchestrateRepositoryQueryTest {
         public OrchestrateTemplate orchestrateTemplate() {
             
             OrchestrateTemplate template = new OrchestrateTemplate();
-            template.setEndpoint("http://localhost:5124");
+            template.setEndpoint("http://localhost:5124/v0");
             template.setPort(5124);
             template.setUseSSL(false);
             template.setApiKey("OUR-API-KEY");

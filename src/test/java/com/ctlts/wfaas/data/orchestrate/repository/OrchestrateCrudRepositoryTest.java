@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,6 +39,30 @@ public class OrchestrateCrudRepositoryTest {
     
     @Autowired
     private TestEntityRespository repository;
+    
+    /**
+     * Because of an issue with wiremock, specifically related to PUT operations
+     * following GET operations, I'm adding this before block. If the save op fails,
+     * it should only fail the first time.
+     */
+    @Before
+    public void before() {
+        
+        TestEntity e = new TestEntity();
+        
+        try {
+            
+            repository.save(e);
+            
+        } catch (Exception e1) {}
+        
+        try {
+            
+            repository.delete(e);
+            
+        } catch (Exception e1) {}
+        
+    }
     
     @Test
     public void testSave() {
@@ -235,7 +260,7 @@ public class OrchestrateCrudRepositoryTest {
         public OrchestrateTemplate orchestrateTemplate() {
             
             OrchestrateTemplate template = new OrchestrateTemplate();
-            template.setEndpoint("http://localhost:5124");
+            template.setEndpoint("http://localhost:5124/v0");
             template.setPort(5124);
             template.setUseSSL(false);
             template.setApiKey("OUR-API-KEY");

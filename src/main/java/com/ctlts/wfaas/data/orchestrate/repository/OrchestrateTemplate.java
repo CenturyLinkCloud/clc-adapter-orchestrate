@@ -84,13 +84,12 @@ public class OrchestrateTemplate {
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + Base64.getEncoder().encodeToString(apiKey.getBytes()));
-        headers.add("If-None-Match", "*");
         headers.add("Content-Type", "application/json");
         
         try {
             
             new RestTemplate().exchange(uri, HttpMethod.PUT, 
-                    new HttpEntity(mapper.writeValueAsString(entity), headers), Map.class);
+                    new HttpEntity(new ObjectMapper().readValue(mapper.writeValueAsString(entity), Map.class), headers), Map.class);
             
             return (E) findById(id, entity.getClass(), collection);
             

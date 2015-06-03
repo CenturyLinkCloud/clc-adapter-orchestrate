@@ -133,8 +133,8 @@
 		</plugins>
 	</build>
 	<scm>
-		<url>scm:git:https://github.com/CenturylinkTechnology/wfaas-adapter-orchestrate</url>
-		<connection>scm:git:https://github.com/CenturylinkTechnology/wfaas-adapter-orchestrate.git</connection>
-		<developerConnection>scm:git:https://github.com/CenturylinkTechnology/wfaas-adapter-orchestrate.git</developerConnection>
+		<url>scm:git:https://github.com/CenturyLinkCloud/wf-adapter-orchestrate</url>
+		<connection>scm:git:https://github.com/CenturyLinkCloud/wf-adapter-orchestrate.git</connection>
+		<developerConnection>scm:git:https://github.com/CenturyLinkCloud/wf-adapter-orchestrate.git</developerConnection>
 	</scm>
 </project>

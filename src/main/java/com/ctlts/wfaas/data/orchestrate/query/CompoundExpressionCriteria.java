@@ -13,7 +13,8 @@ public class CompoundExpressionCriteria extends Criteria {
     private Criteria base;
     private Criteria criteria;
     
-    public CompoundExpressionCriteria(String conjunction, Criteria base, Criteria criteria) {
+    public CompoundExpressionCriteria(Criteria parent, String conjunction, Criteria base, Criteria criteria) {
+        super(parent);
         this.conjunction = conjunction;
         this.base = base;
         this.criteria = criteria;

@@ -7,7 +7,8 @@ public class ExpressionCriteria extends Criteria {
     private Part part;
     private String value;
     
-    public ExpressionCriteria(Part part, Object value) {
+    public ExpressionCriteria(Criteria parent, Part part, Object value) {
+        super(parent);
         this.part = part;
         this.value = String.valueOf(value);
     }

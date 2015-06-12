@@ -23,22 +23,22 @@ public class OrchestrateQueryCreator extends AbstractQueryCreator<Query, Criteri
 
     @Override
     protected Criteria create(Part part, Iterator<Object> iterator) {
-        return new ExpressionCriteria(part, iterator.next());
+        return new ExpressionCriteria(null, part, iterator.next());
     }
 
     @Override
     protected Criteria and(Part part, Criteria base, Iterator<Object> iterator) {
-        return base.and(part, iterator);
+        return base.and(base, part, iterator);
     }
 
     @Override
     protected Criteria or(Criteria base, Criteria criteria) {
-        return new CompoundExpressionCriteria("OR", base, criteria);
+        return new CompoundExpressionCriteria(base, "OR", base, criteria);
     }
 
     @Override
     protected Query complete(Criteria criteria, Sort sort) {
-        return criteria.createQuery();
+        return criteria.getRoot().createQuery();
     }
     
 }

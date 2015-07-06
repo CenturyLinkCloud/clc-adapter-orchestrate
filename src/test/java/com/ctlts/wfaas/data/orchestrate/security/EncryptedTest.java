@@ -5,6 +5,9 @@ package com.ctlts.wfaas.data.orchestrate.security;
 
 import static org.junit.Assert.*;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -115,6 +118,36 @@ public class EncryptedTest {
         
     }
     
+    @Test
+    public void testEncryptedSerialize_Map() throws Exception {
+        
+        TestFixtureMap tf = new TestFixtureMap();
+        tf.getMap().put("hello", "world");
+        
+        String json = mapper.writeValueAsString(tf);
+        
+        assertTrue("Checking that the json string does contain the "
+                + "pre-encrypted text value.", json.contains("hello"));
+        
+        assertFalse("Checking that the json string does not contain the "
+                + "pre-encrypted text value.", json.contains("world"));
+        
+    }
+    
+    @Test
+    public void testEncryptedDeserialize_Map() throws Exception {
+        
+        TestFixtureMap tf = new TestFixtureMap();
+        tf.getMap().put("hello", "world");
+        
+        String json = mapper.writeValueAsString(tf);
+        
+        TestFixtureMap deserialized = mapper.readValue(json.getBytes(), TestFixtureMap.class);
+        
+        assertEquals("Checking that the json was deserialized properly.", "world", deserialized.getMap().get("hello"));
+        
+    }
+    
     public static class TestFixture {
         
         public String plainText;
@@ -143,6 +176,22 @@ public class EncryptedTest {
         @Encrypted
         public void setEncryptedText(String encryptedText) {
             this.encryptedText = encryptedText;
+        }
+        
+    }
+    
+    
+    public static class TestFixtureMap {
+        
+        @Encrypted
+        public Map<String, Object> map = new LinkedHashMap<String, Object>();
+
+        public Map<String, Object> getMap() {
+            return map;
+        }
+
+        public void setMap(Map<String, Object> map) {
+            this.map = map;
         }
         
     }

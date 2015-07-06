@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import org.springframework.data.repository.query.parser.Part;
 
+import com.ctlts.wfaas.data.orchestrate.repository.EntityMetadata;
+
 public abstract class Criteria {
     
     private Criteria parent;
@@ -13,9 +15,9 @@ public abstract class Criteria {
         this.parent = parent;
     }
 
-    public Criteria and(Criteria parent, Part p, Iterator<Object> iterator) {
+    public Criteria and(Criteria parent, EntityMetadata metadata, Part p, Iterator<Object> iterator) {
 
-        Criteria next = new ExpressionCriteria(parent, p, iterator.next());
+        Criteria next = new ExpressionCriteria(parent, metadata, p, iterator.next());
         continuation = new Continuation("AND", next);
         
         return next;

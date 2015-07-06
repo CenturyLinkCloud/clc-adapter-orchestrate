@@ -9,7 +9,10 @@ import java.util.Arrays;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mapping.PropertyPath;
 import org.springframework.util.Assert;
+
+import com.ctlts.wfaas.data.orchestrate.query.PropertyMetadata;
 
 /**
  * @author mramach
@@ -75,6 +78,29 @@ public class EntityMetadata {
         Collection c = AnnotationUtils.findAnnotation(type, Collection.class);
         
         return c != null ? c.value() : type.getSimpleName();
+        
+    }
+
+    /**
+     * Get property metadata for the provided property path.
+     * 
+     * @param path The path to the property.
+     * @return {@link PropertyMetadata} The property metadata instance.
+     */
+    public PropertyMetadata getPropertyMetadata(PropertyPath path) {
+        
+        PropertyPath curr = path;
+        PropertyMetadata metadata = new PropertyMetadata(path.getOwningType().getType(), path.getSegment());
+        
+        while(curr.hasNext()) {
+            
+            curr = path.next();
+        
+            metadata = new PropertyMetadata(curr.getOwningType().getType(), curr.getSegment());
+
+        }
+        
+        return metadata;
         
     }
 

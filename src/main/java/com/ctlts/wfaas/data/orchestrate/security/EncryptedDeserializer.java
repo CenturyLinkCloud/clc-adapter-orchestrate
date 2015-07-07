@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 
 /**
  * @author mramach
@@ -23,8 +22,18 @@ public class EncryptedDeserializer extends JsonDeserializer<String> implements C
     @Override
     public String deserialize(JsonParser jp, DeserializationContext ctxt) 
             throws IOException, JsonProcessingException {
+        
+        String text = jp.getText();
 
-        return EncryptedContext.getInstance().decrypt(jp.readValueAs(String.class));
+        try {
+            
+            return EncryptedContext.getInstance().decrypt(text);
+            
+        } catch (Exception e) {
+            
+            return text;
+            
+        }
         
     }
 
@@ -32,11 +41,7 @@ public class EncryptedDeserializer extends JsonDeserializer<String> implements C
     public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) 
             throws JsonMappingException {
 
-        if(property != null && property.getAnnotation(Encrypted.class) != null) {
-            return this;
-        }
-        
-        return new StringDeserializer();
+        return this;
         
     }
 

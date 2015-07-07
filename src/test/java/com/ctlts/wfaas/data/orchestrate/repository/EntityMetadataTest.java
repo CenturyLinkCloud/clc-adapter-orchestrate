@@ -9,6 +9,9 @@ import java.util.UUID;
 
 import org.junit.Test;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mapping.PropertyPath;
+
+import com.ctlts.wfaas.data.orchestrate.query.PropertyMetadata;
 
 /**
  * @author mramach
@@ -62,6 +65,27 @@ public class EntityMetadataTest {
         
     }
     
+    @Test
+    public void testGetPropertyMetadata() throws Exception {
+        
+        PropertyMetadata metadata = new EntityMetadata(TestFixtureValid.class)
+            .getPropertyMetadata(PropertyPath.from("id", TestFixtureValid.class));
+        
+        assertNotNull("Checking that the property metadata is not null.", metadata);
+        
+    }
+    
+    @Test
+    public void testGetPropertyMetadata_Nested() throws Exception {
+        
+        PropertyMetadata metadata = new EntityMetadata(TestFixtureValid.class)
+            .getPropertyMetadata(PropertyPath.from("nested.id", TestFixtureNested.class));
+        
+        assertNotNull("Checking that the property metadata is not null.", metadata);
+        assertEquals("Checking that the metadata is for the correct property type.", "id", metadata.getName());
+        
+    }
+    
     public static class TestFixtureValid {
         
         @Id
@@ -89,6 +113,20 @@ public class EntityMetadataTest {
     
     @Collection("TestFixture")
     public static class TestFixtureWithCollectionAnnotation {
+    }
+    
+    public static class TestFixtureNested {
+        
+        private TestFixtureValid nested;
+
+        public TestFixtureValid getNested() {
+            return nested;
+        }
+
+        public void setNested(TestFixtureValid nested) {
+            this.nested = nested;
+        }
+        
     }
     
 }

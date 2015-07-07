@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -167,9 +168,33 @@ public class OrchestrateRepositoryQueryTest {
         repository.deleteByStringProperty("Delete/Remove is not supported.");
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void findBy_WithPaging() {
-        repository.findByStringProperty("Paging is not supported.", new PageRequest(1, 2));
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("similar");
+        
+        TestEntity n2 = new TestEntity();
+        n2.setStringProperty("similar");
+        
+        repository.save(Arrays.asList(n1, n2));
+        
+        Page<TestEntity> page = repository.findByStringProperty("similar", new PageRequest(0, 1));
+        
+        assertNotNull("Checking that the page result is not null.", page);
+        assertEquals("Checking that the page is the correct size.", 1, page.getSize());
+        assertEquals("Checking that the total size is correct.", 2, page.getTotalElements());
+        assertTrue("Checking that the next page is available.", page.hasNext());
+        assertFalse("Checking that the previous page is not available.", page.hasPrevious());
+        
+        Page<TestEntity> page2 = repository.findByStringProperty("similar", page.nextPageable());
+        
+        assertNotNull("Checking that the page result is not null.", page2);
+        assertEquals("Checking that the page is the correct size.", 1, page2.getSize());
+        assertEquals("Checking that the total size is correct.", 2, page2.getTotalElements());
+        assertFalse("Checking that the next page is not available.", page2.hasNext());
+        assertTrue("Checking that the previous page is available.", page2.hasPrevious());
+        
     }
     
     @Test(expected = UnsupportedOperationException.class)

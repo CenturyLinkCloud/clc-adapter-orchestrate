@@ -6,11 +6,6 @@
 	<version>0.0.4-SNAPSHOT</version>
 	<name>wfaas-adapter-orchestrate</name>
 	<packaging>jar</packaging>
-	<parent>
-		<groupId>com.ctlts</groupId>
-		<artifactId>wfaas-maven-parent</artifactId>
-		<version>0.0.4</version>
-	</parent>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<spring.version>4.1.6.RELEASE</spring.version>
@@ -108,8 +103,63 @@
 			<url>http://64.15.185.240/nexus/content/repositories/snapshots</url>
 		</snapshotRepository>
 	</distributionManagement>
+	<repositories>
+		<repository>
+			<id>CTL</id>
+			<name>CTL</name>
+			<url>http://nexus.service.consul:8081/content/groups/public</url>
+		</repository>
+		<repository>
+			<id>CTL-Public</id>
+			<name>CTL Public</name>
+			<url>http://64.15.185.240/nexus/content/groups/public</url>
+		</repository>
+	</repositories>
+	<pluginRepositories>
+		<pluginRepository>
+			<id>CTL</id>
+			<name>CTL</name>
+			<url>http://nexus.service.consul:8081/content/groups/public</url>
+		</pluginRepository>
+		<pluginRepository>
+			<id>CTL-Public</id>
+			<name>CTL Public</name>
+			<url>http://64.15.185.240/nexus/content/groups/public</url>
+		</pluginRepository>
+	</pluginRepositories>
 	<build>
 		<finalName>wfaas-adapter-orchestrate</finalName>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.2</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>external.atlassian.jgitflow</groupId>
+				<artifactId>jgitflow-maven-plugin</artifactId>
+				<version>1.0.2</version>
+				<configuration>
+					<flowInitContext>
+						<masterBranchName>master</masterBranchName>
+						<developBranchName>develop</developBranchName>
+						<featureBranchPrefix>feature-</featureBranchPrefix>
+						<releaseBranchPrefix>release-</releaseBranchPrefix>
+						<hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+						<versionTagPrefix>${artifactId}-</versionTagPrefix>
+					</flowInitContext>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.7.4.201502262128</version>
+			</plugin>
+		</plugins>
 	</build>
 	<scm>
 		<url>scm:git:https://github.com/CenturyLinkCloud/wf-adapter-orchestrate</url>

@@ -46,6 +46,8 @@ public class OrchestrateTemplate {
     private boolean useSSL = true;
     private OrchestrateClient client;
     private ObjectMapper mapper;
+    private List<EntityEventListener> preSaveListeners = new LinkedList<EntityEventListener>();
+    private List<EntityEventListener> postSaveListeners = new LinkedList<EntityEventListener>();
     
     @PostConstruct
     public void postConstruct() {
@@ -89,10 +91,16 @@ public class OrchestrateTemplate {
         
         try {
             
+            preSaveListeners.forEach(l -> l.onEvent(entity));
+            
             new RestTemplate().exchange(uri, HttpMethod.PUT, 
                     new HttpEntity(new ObjectMapper().readValue(mapper.writeValueAsString(entity), Map.class), headers), Map.class);
             
-            return (E) findById(id, entity.getClass(), collection);
+            E result = (E) findById(id, entity.getClass(), collection);
+            
+            postSaveListeners.forEach(l -> l.onEvent(result));
+            
+            return result;
             
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -211,4 +219,12 @@ public class OrchestrateTemplate {
         this.apiKey = apiKey;
     }
 
+    public void addPreSaveListener(EntityEventListener listener) {
+        preSaveListeners.add(listener);
+    }
+    
+    public void addPostSaveListener(EntityEventListener listener) {
+        postSaveListeners.add(listener);
+    }
+    
 }

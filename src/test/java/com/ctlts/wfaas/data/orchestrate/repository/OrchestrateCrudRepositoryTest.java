@@ -10,6 +10,7 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -39,6 +40,8 @@ public class OrchestrateCrudRepositoryTest {
     
     @Autowired
     private TestEntityRespository repository;
+    private final static AtomicInteger preSaveCount = new AtomicInteger();
+    private final static AtomicInteger postSaveCount = new AtomicInteger();
     
     /**
      * Because of an issue with wiremock, specifically related to PUT operations
@@ -62,6 +65,9 @@ public class OrchestrateCrudRepositoryTest {
             
         } catch (Exception e1) {}
         
+        preSaveCount.set(0);
+        postSaveCount.set(0);
+        
     }
     
     @Test
@@ -73,6 +79,30 @@ public class OrchestrateCrudRepositoryTest {
         TestEntity result = repository.save(testEntity);
         
         assertNotNull("Checking that the result is not null.", result);
+        
+    }
+    
+    @Test
+    public void testSave_PreSaveListenerFired() {
+        
+        TestEntity testEntity = new TestEntity();
+        testEntity.setStringProperty("Hello World!");
+        
+        repository.save(testEntity);
+        
+        assertEquals("Checking that the listener was fired.", 1, preSaveCount.get());
+        
+    }
+    
+    @Test
+    public void testSave_PostSaveListenerFired() {
+        
+        TestEntity testEntity = new TestEntity();
+        testEntity.setStringProperty("Hello World!");
+        
+        repository.save(testEntity);
+        
+        assertEquals("Checking that the listener was fired.", 1, preSaveCount.get());
         
     }
     
@@ -264,6 +294,8 @@ public class OrchestrateCrudRepositoryTest {
             template.setPort(5124);
             template.setUseSSL(false);
             template.setApiKey("OUR-API-KEY");
+            template.addPreSaveListener(i -> preSaveCount.incrementAndGet());
+            template.addPostSaveListener(i -> postSaveCount.incrementAndGet());
             
             return template;
         

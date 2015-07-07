@@ -6,8 +6,6 @@ package com.ctlts.wfaas.data.orchestrate.query;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.QueryMethod;
@@ -69,17 +67,12 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
         Query query = new OrchestrateQueryCreator(tree, new ParametersParameterAccessor(
                 queryMethod.getParameters(), parameters)).createQuery();
         
-        if(queryMethod.isPageQuery()) {
-            
-            PageRequest pageReq = (PageRequest) parameters[queryMethod.getParameters().getPageableIndex()];
-            
-            ResultSet<?> results = orchestrateTemplate.query(entityMetadata.getCollection(), query, 
-                    metadata.getDomainType(), pageReq.getPageSize(), pageReq.getPageSize() * pageReq.getOffset());
-            
-            return new PageImpl<>((List<?>) results.getValue(), pageReq, results.getTotalSize());
-            
-        } 
-            
+        return execute(query, parameters);
+        
+    }
+    
+    protected Object execute(Query query, Object[] parameters) {
+        
         ResultSet<?> results = orchestrateTemplate.query(entityMetadata.getCollection(), 
                 query, metadata.getDomainType());
             
@@ -94,6 +87,18 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
     @Override
     public QueryMethod getQueryMethod() {
         return queryMethod;
+    }
+
+    protected RepositoryMetadata getMetadata() {
+        return metadata;
+    }
+
+    protected EntityMetadata getEntityMetadata() {
+        return entityMetadata;
+    }
+
+    protected OrchestrateTemplate getOrchestrateTemplate() {
+        return orchestrateTemplate;
     }
 
 }

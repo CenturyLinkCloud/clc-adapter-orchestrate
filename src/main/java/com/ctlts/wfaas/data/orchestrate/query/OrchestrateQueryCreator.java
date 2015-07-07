@@ -11,29 +11,24 @@ import org.springframework.data.repository.query.parser.AbstractQueryCreator;
 import org.springframework.data.repository.query.parser.Part;
 import org.springframework.data.repository.query.parser.PartTree;
 
-import com.ctlts.wfaas.data.orchestrate.repository.EntityMetadata;
-
 /**
  * @author mramach
  *
  */
 public class OrchestrateQueryCreator extends AbstractQueryCreator<Query, Criteria> {
 
-    private EntityMetadata metadata;
-    
-    public OrchestrateQueryCreator(PartTree tree, EntityMetadata metadata, ParameterAccessor parameters) {
+    public OrchestrateQueryCreator(PartTree tree, ParameterAccessor parameters) {
         super(tree, parameters);
-        this.metadata = metadata;
     }
 
     @Override
     protected Criteria create(Part part, Iterator<Object> iterator) {
-        return new ExpressionCriteria(null, metadata, part, iterator.next());
+        return new ExpressionCriteria(null, part, iterator.next());
     }
 
     @Override
     protected Criteria and(Part part, Criteria base, Iterator<Object> iterator) {
-        return base.and(base, metadata, part, iterator);
+        return base.and(base, part, iterator);
     }
 
     @Override

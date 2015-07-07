@@ -67,7 +67,7 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
             throw new UnsupportedOperationException("Order By in dynamic queries is not supported.");
         }
         
-        Query query = new OrchestrateQueryCreator(tree, entityMetadata, new ParametersParameterAccessor(
+        Query query = new OrchestrateQueryCreator(tree, new ParametersParameterAccessor(
                 queryMethod.getParameters(), parameters)).createQuery();
         
         List<?> results = (List<?>) orchestrateTemplate.query(entityMetadata.getCollection(), 

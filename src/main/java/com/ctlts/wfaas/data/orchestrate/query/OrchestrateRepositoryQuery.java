@@ -6,6 +6,8 @@ package com.ctlts.wfaas.data.orchestrate.query;
 import java.lang.reflect.Method;
 import java.util.List;
 
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.QueryMethod;
@@ -14,6 +16,7 @@ import org.springframework.data.repository.query.parser.PartTree;
 
 import com.ctlts.wfaas.data.orchestrate.repository.EntityMetadata;
 import com.ctlts.wfaas.data.orchestrate.repository.OrchestrateTemplate;
+import com.ctlts.wfaas.data.orchestrate.repository.ResultSet;
 
 
 /**
@@ -59,10 +62,6 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
             throw new UnsupportedOperationException("Slice in dynamic queries is not supported.");
         }
         
-        if(queryMethod.isPageQuery()) {
-            throw new UnsupportedOperationException("Paging in dynamic queries is not supported.");
-        }
-
         if(tree.getSort() != null) {
             throw new UnsupportedOperationException("Order By in dynamic queries is not supported.");
         }
@@ -70,11 +69,22 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
         Query query = new OrchestrateQueryCreator(tree, new ParametersParameterAccessor(
                 queryMethod.getParameters(), parameters)).createQuery();
         
-        List<?> results = (List<?>) orchestrateTemplate.query(entityMetadata.getCollection(), 
+        if(queryMethod.isPageQuery()) {
+            
+            PageRequest pageReq = (PageRequest) parameters[queryMethod.getParameters().getPageableIndex()];
+            
+            ResultSet<?> results = orchestrateTemplate.query(entityMetadata.getCollection(), query, 
+                    metadata.getDomainType(), pageReq.getPageSize(), pageReq.getPageSize() * pageReq.getOffset());
+            
+            return new PageImpl<>((List<?>) results.getValue(), pageReq, results.getTotalSize());
+            
+        } 
+            
+        ResultSet<?> results = orchestrateTemplate.query(entityMetadata.getCollection(), 
                 query, metadata.getDomainType());
-
+            
         if(!queryMethod.isCollectionQuery()) {
-            return results.stream().findFirst().orElse(null);
+            return ((List<?>)results.getValue()).stream().findFirst().orElse(null);
         }
         
         return results;

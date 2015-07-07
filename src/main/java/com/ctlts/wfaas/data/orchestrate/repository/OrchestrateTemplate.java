@@ -37,6 +37,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 @SuppressWarnings("unchecked")
 public class OrchestrateTemplate {
     
+    private static final int DEFAULT_MAX_RESULTSET_SIZE = 100;
     private static final int DEFAULT_TIMEOUT = 30;
     
     private String endpoint = "https://api.ctl-uc1-a.orchestrate.io/v0/";
@@ -99,12 +100,16 @@ public class OrchestrateTemplate {
         
     }
 
-    public <E> List<E> query(String collection, Query query, Class<E> type) {
-        return query(collection, query.toString(), type);
+    public <E> ResultSet<List<E>> query(String collection, Query query, Class<E> type) {
+        return query(collection, query.toString(), type, DEFAULT_MAX_RESULTSET_SIZE, 0);
+    }
+    
+    public <E> ResultSet<List<E>> query(String collection, Query query, Class<E> type, int limit, int offset) {
+        return query(collection, query.toString(), type, limit, offset);
     }
     
     @SuppressWarnings("rawtypes")
-    public <E> List<E> query(String collection, String query, Class<E> type) {
+    public <E> ResultSet<List<E>> query(String collection, String query, Class<E> type, int limit, int offset) {
 
         Assert.hasLength(collection, "The collection can not be null or an empty String.");
         Assert.notNull(type, "The type can not be null.");
@@ -114,6 +119,8 @@ public class OrchestrateTemplate {
         URI uri = UriComponentsBuilder.fromHttpUrl(endpoint)
             .path("/" + collection)
                 .queryParam("query", query)
+                .queryParam("limit", limit)
+                .queryParam("offset", offset)
                     .build()
                         .toUri();
         
@@ -137,8 +144,11 @@ public class OrchestrateTemplate {
             }
                 
         });
+
+        ResultSet<List<E>> resultset = new ResultSet<List<E>>(results, 
+                (Integer)res.getBody().get("count"), (Integer)res.getBody().get("total_count"));
         
-        return results;
+        return resultset;
 
     }
 
@@ -166,15 +176,15 @@ public class OrchestrateTemplate {
     }
 
     public boolean exists(String query, Class<?> entityClass, String collection) {
-        return !query(collection, query, entityClass).isEmpty();
+        return !query(collection, query, entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue().isEmpty();
     }
 
     public <T> Iterable<T> findAll(String query, Class<T> entityClass, String collection) {
-        return query(collection, query, entityClass);
+        return query(collection, query, entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue();
     }
 
     public long count(String query, Class<?> entityClass, String collection) {
-        return query(collection, query, entityClass).size();
+        return query(collection, query, entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue().size();
     }
 
     public void delete(String id, String collection) {

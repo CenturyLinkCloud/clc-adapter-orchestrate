@@ -87,7 +87,7 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
             return ((List<?>)results.getValue()).stream().findFirst().orElse(null);
         }
         
-        return results;
+        return results.getValue();
         
     }
     

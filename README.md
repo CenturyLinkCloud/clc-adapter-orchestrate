@@ -69,3 +69,49 @@ Now, simply inject your repository into any bean you would like using the standa
 
     @Autowired
     private MyRespository repository;
+    
+## Dynamic Query Interfaces
+
+Spring Data allows for the dynamic parsing and construction of query methods based on interface methods. What follows are functions that are currently supported by the adapter.
+
+### Find By With Query Parameters
+
+You can define a dynamic method to locate a single entity.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		MyObject findByFieldName(String value);
+
+	}
+	
+You can define a dynamic method to locate a list of entities.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		List<MyObject> findByFieldName(String value);
+
+	}
+	
+You can define a dynamic method to locate to page through entities.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		Page<MyObject> findByFieldName(String value, Pageable req);
+
+	}
+	
+You can define a dynamic method with a slightly more complex parameter combination.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		List<MyObject> findByField1NameAndField2Name(String value1, String value2);
+
+	}
+	
+You can define a dynamic method with complex types using nested parameter syntax.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		List<MyObject> findByObjectField_NestedField(String value);
+
+	}

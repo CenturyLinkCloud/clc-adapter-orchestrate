@@ -48,6 +48,7 @@ public class OrchestrateTemplate {
     private ObjectMapper mapper;
     private List<EntityEventListener> preSaveListeners = new LinkedList<EntityEventListener>();
     private List<EntityEventListener> postSaveListeners = new LinkedList<EntityEventListener>();
+    private int maxResults = DEFAULT_MAX_RESULTSET_SIZE;
     
     @PostConstruct
     public void postConstruct() {
@@ -217,6 +218,15 @@ public class OrchestrateTemplate {
 
     public void setApiKey(String apiKey) {
         this.apiKey = apiKey;
+    }
+
+    public int getMaxResults() {
+        return maxResults;
+    }
+
+    public void setMaxResults(int maxResults) {
+        // TODO - Throw exception when max results exceeds 100. This is an Orchestrate system limitation.
+        this.maxResults = maxResults;
     }
 
     public void addPreSaveListener(EntityEventListener listener) {

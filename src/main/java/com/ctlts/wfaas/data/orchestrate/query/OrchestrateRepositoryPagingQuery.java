@@ -27,7 +27,7 @@ public class OrchestrateRepositoryPagingQuery extends OrchestrateRepositoryQuery
     }
 
     @Override
-    protected Object execute(Query query, Object[] parameters) {
+    protected Object execute(Query query, Object[] parameters, int maxResults) {
         
         PageRequest pageReq = (PageRequest) parameters[getQueryMethod().getParameters().getPageableIndex()];
         

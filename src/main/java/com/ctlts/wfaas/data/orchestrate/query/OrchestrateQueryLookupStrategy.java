@@ -30,7 +30,7 @@ public class OrchestrateQueryLookupStrategy implements QueryLookupStrategy {
         
         QueryMethod queryMethod = new QueryMethod(method, metadata);
         
-        if(queryMethod.isPageQuery()) {
+        if(queryMethod.isPageQuery() || queryMethod.isSliceQuery()) {
             return new OrchestrateRepositoryPagingQuery(method, metadata, orchestrateTemplate);
         }
         

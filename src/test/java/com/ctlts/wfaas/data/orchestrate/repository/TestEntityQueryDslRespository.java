@@ -29,15 +29,15 @@ public interface TestEntityQueryDslRespository extends OrchestrateRepository<Tes
 
     public TestEntity findDistinctByStringProperty(String stringProperty);
 
-    public void findFirst2ByStringProperty(String stringProperty);
+    public List<TestEntity> findFirst1ByStringProperty(String stringProperty);
 
-    public void countByStringProperty(String stringProperty);
+    public Integer countByStringProperty(String stringProperty);
 
     public void deleteByStringProperty(String stringProperty);
 
     public Page<TestEntity> findByStringProperty(String stringProperty, Pageable req);
 
-    public Slice<TestEntity> findById(String string, Pageable req);
+    public Slice<TestEntity> findByStringProperty2(String stringProperty2, Pageable req);
 
     public void findByStringPropertyOrderByStringPropertyAsc(String stringProperty);
     

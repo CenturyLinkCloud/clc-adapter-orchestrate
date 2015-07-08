@@ -5,9 +5,9 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.util.Assert;
@@ -43,13 +43,9 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
     public <S extends T> List<S> save(Iterable<S> entities) {
         
         Assert.notNull(entities, "The entities collection can not be null.");
-        List<S> results = new LinkedList<S>();
-
-        entities.iterator().forEachRemaining(e -> {
-            results.add(save(e));
-        });
         
-        return results;
+        return StreamSupport.stream(entities.spliterator(), false)
+                .map(this::save).collect(Collectors.toList());
         
     }
 

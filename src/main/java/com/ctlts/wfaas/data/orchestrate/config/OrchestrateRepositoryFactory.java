@@ -58,8 +58,4 @@ public class OrchestrateRepositoryFactory extends RepositoryFactorySupport {
         
     }
 
-//    private static boolean isQueryDslRepository(Class<?> repositoryInterface) {
-//        return QUERY_DSL_PRESENT && QueryDslPredicateExecutor.class.isAssignableFrom(repositoryInterface);
-//    }
-
 }

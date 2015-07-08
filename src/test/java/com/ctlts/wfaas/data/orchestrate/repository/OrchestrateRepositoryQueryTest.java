@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -153,14 +154,40 @@ public class OrchestrateRepositoryQueryTest {
         repository.findDistinctByStringProperty("Distinct is not supported.");
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testFindLimitingBy() {
-        repository.findFirst2ByStringProperty("Limiting is not supported.");
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("similar");
+        
+        TestEntity n2 = new TestEntity();
+        n2.setStringProperty("similar");
+        
+        repository.save(Arrays.asList(n1, n2));
+        
+        List<TestEntity> results = repository.findFirst1ByStringProperty("similar");
+        
+        assertNotNull("Checking that the result list is not null.", results);
+        assertEquals("Checking that the result list is the correct size.", 1, results.size());
+        
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testCountBy() {
-        repository.countByStringProperty("Count is not supported.");
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("similar");
+        
+        TestEntity n2 = new TestEntity();
+        n2.setStringProperty("similar");
+        
+        repository.save(Arrays.asList(n1, n2));
+        
+        Integer count = repository.countByStringProperty("similar");
+        
+        assertNotNull("Checking that the count is not null.", count);
+        assertEquals("Checking that the count is the correct size.", new Integer(2), count);
+        
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -197,9 +224,31 @@ public class OrchestrateRepositoryQueryTest {
         
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void findBy_WithSlice() {
-        repository.findById("Slice is not supported.", new PageRequest(1, 2));
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty2("similar");
+        
+        TestEntity n2 = new TestEntity();
+        n2.setStringProperty2("similar");
+        
+        repository.save(Arrays.asList(n1, n2));
+        
+        Slice<TestEntity> slice = repository.findByStringProperty2("similar", new PageRequest(0, 1));
+        
+        assertNotNull("Checking that the page result is not null.", slice);
+        assertEquals("Checking that the page is the correct size.", 1, slice.getSize());
+        assertTrue("Checking that the next page is available.", slice.hasNext());
+        assertFalse("Checking that the previous page is not available.", slice.hasPrevious());
+        
+        Slice<TestEntity> slice2 = repository.findByStringProperty2("similar", slice.nextPageable());
+        
+        assertNotNull("Checking that the page result is not null.", slice2);
+        assertEquals("Checking that the page is the correct size.", 1, slice2.getSize());
+        assertFalse("Checking that the next page is not available.", slice2.hasNext());
+        assertTrue("Checking that the previous page is available.", slice2.hasPrevious());
+        
     }
     
     @Test(expected = UnsupportedOperationException.class)

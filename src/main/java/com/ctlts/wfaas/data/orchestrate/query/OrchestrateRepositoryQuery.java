@@ -48,11 +48,7 @@ public class OrchestrateRepositoryQuery implements RepositoryQuery {
             throw new UnsupportedOperationException("Use of Delete or Remove in dynamic queries is not supported.");
         }
 
-        if(tree.getSort() != null) {
-            throw new UnsupportedOperationException("Order By in dynamic queries is not supported.");
-        }
-        
-        Query query = new OrchestrateQueryCreator(tree, new ParametersParameterAccessor(
+        Query query = new OrchestrateQueryCreator(entityMetadata, tree, new ParametersParameterAccessor(
                 queryMethod.getParameters(), parameters)).createQuery();
         
         return execute(query, parameters, getMaxResultsSize());

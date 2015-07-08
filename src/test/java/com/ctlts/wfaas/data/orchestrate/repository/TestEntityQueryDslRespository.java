@@ -39,6 +39,6 @@ public interface TestEntityQueryDslRespository extends OrchestrateRepository<Tes
 
     public Slice<TestEntity> findByStringProperty2(String stringProperty2, Pageable req);
 
-    public void findByStringPropertyOrderByStringPropertyAsc(String stringProperty);
+    public List<TestEntity> findByStringPropertyOrderByStringProperty2Asc(String stringProperty);
     
 }

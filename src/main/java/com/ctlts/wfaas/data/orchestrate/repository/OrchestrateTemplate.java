@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -110,55 +111,50 @@ public class OrchestrateTemplate {
     }
 
     public <E> ResultSet<List<E>> query(String collection, Query query, Class<E> type) {
-        return query(collection, query.toString(), type, DEFAULT_MAX_RESULTSET_SIZE, 0);
+        return query(collection, query.getStatement(), query.getSort(), type, DEFAULT_MAX_RESULTSET_SIZE, 0);
     }
     
     public <E> ResultSet<List<E>> query(String collection, Query query, Class<E> type, int limit, int offset) {
-        return query(collection, query.toString(), type, limit, offset);
+        return query(collection, query.getStatement(), query.getSort(), type, limit, offset);
     }
     
     @SuppressWarnings("rawtypes")
-    public <E> ResultSet<List<E>> query(String collection, String query, Class<E> type, int limit, int offset) {
+    public <E> ResultSet<List<E>> query(String collection, String query, String sort, Class<E> type, int limit, int offset) {
 
         Assert.hasLength(collection, "The collection can not be null or an empty String.");
         Assert.notNull(type, "The type can not be null.");
-
-        List<E> results = new LinkedList<E>();
 
         URI uri = UriComponentsBuilder.fromHttpUrl(endpoint)
             .path("/" + collection)
                 .queryParam("query", query)
                 .queryParam("limit", limit)
                 .queryParam("offset", offset)
+                .queryParam("sort", sort)
                     .build()
                         .toUri();
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + Base64.getEncoder().encodeToString(apiKey.getBytes()));
         
-        HttpEntity<?> entity = new HttpEntity(headers);
-        
-        ResponseEntity<Map> res = new RestTemplate().exchange(uri, HttpMethod.GET, entity, Map.class);
-        
+        ResponseEntity<Map> res = new RestTemplate().exchange(uri, HttpMethod.GET, new HttpEntity(headers), Map.class);
         List<Map<String, Object>> resultList = (List<Map<String, Object>>) res.getBody().get("results");
-        
-        resultList.forEach(i -> {
-                
-            try {
-                
-                results.add(mapper.readValue(new ObjectMapper().writeValueAsString(i.get("value")), type));
-                    
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-                
-        });
+        List<E> results = resultList.stream().map(i -> deserialize(type, i)).collect(Collectors.toList());
 
-        ResultSet<List<E>> resultset = new ResultSet<List<E>>(results, 
+        return new ResultSet<List<E>>(results, 
                 (Integer)res.getBody().get("count"), (Integer)res.getBody().get("total_count"));
         
-        return resultset;
+    }
 
+    private <E> E deserialize(Class<E> type, Map<String, Object> i) {
+        
+        try {
+            
+            return mapper.readValue(new ObjectMapper().writeValueAsString(i.get("value")), type);
+            
+        } catch (Exception e) {
+            throw new RuntimeException("Failed while attempting to deserialize entity.", e);
+        }
+        
     }
 
     @SuppressWarnings("rawtypes")
@@ -185,15 +181,15 @@ public class OrchestrateTemplate {
     }
 
     public boolean exists(String query, Class<?> entityClass, String collection) {
-        return !query(collection, query, entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue().isEmpty();
+        return !query(collection, query, "", entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue().isEmpty();
     }
 
     public <T> Iterable<T> findAll(String query, Class<T> entityClass, String collection) {
-        return query(collection, query, entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue();
+        return query(collection, query, "", entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue();
     }
 
     public long count(String query, Class<?> entityClass, String collection) {
-        return query(collection, query, entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue().size();
+        return query(collection, query, "", entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue().size();
     }
 
     public void delete(String id, String collection) {

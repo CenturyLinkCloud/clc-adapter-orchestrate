@@ -34,6 +34,15 @@ public class EntityMetadata {
         this.type = type;
         
     }
+    
+    /**
+     * Gets the type.
+     * 
+     * @return The type thos metadata instance represents.
+     */
+    public Class<?> getType() {
+        return type;
+    }
 
     /**
      * Gets the id value from the target.

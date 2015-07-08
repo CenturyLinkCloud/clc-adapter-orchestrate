@@ -1,5 +1,8 @@
 package com.ctlts.wfaas.data.orchestrate.query;
 
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
+
 import org.springframework.data.mapping.PropertyPath;
 import org.springframework.data.repository.query.parser.Part;
 
@@ -28,19 +31,9 @@ public class ExpressionCriteria extends Criteria {
 
     private String resolveDotPath() {
         
-        StringBuffer dotPath = new StringBuffer();
-        
-        part.getProperty().forEach(p -> {
-            
-            dotPath.append(getPropertyMetadata(p).getName()); 
-            
-            if(p.hasNext()){
-                dotPath.append(".");
-            }
-            
-        });
-        
-        return dotPath.toString();
+        return StreamSupport.stream(part.getProperty().spliterator(), false)
+            .map(p -> getPropertyMetadata(p).getName())
+                .collect(Collectors.joining("."));
         
     }
     

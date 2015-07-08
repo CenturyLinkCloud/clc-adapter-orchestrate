@@ -251,9 +251,24 @@ public class OrchestrateRepositoryQueryTest {
         
     }
     
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testFindBy_WithOrder() {
-        repository.findByStringPropertyOrderByStringPropertyAsc("Order By is not supported.");
+        
+        TestEntity n1 = new TestEntity();
+        n1.setStringProperty("similar");
+        n1.setStringProperty2("b");
+        
+        TestEntity n2 = new TestEntity();
+        n2.setStringProperty("similar");
+        n2.setStringProperty2("a");
+        
+        repository.save(Arrays.asList(n1, n2));
+        
+        List<TestEntity> results = repository.findByStringPropertyOrderByStringProperty2Asc("similar");
+        
+        assertNotNull("Checking that the result list is not null.", results);
+        assertEquals("Checking that the result list is the correct size.", 2, results.size());
+        
     }
     
     @Configuration

@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.Sort;
 
 /**
  * @author mramach
@@ -40,5 +41,7 @@ public interface TestEntityQueryDslRespository extends OrchestrateRepository<Tes
     public Slice<TestEntity> findByStringProperty2(String stringProperty2, Pageable req);
 
     public List<TestEntity> findByStringPropertyOrderByStringProperty2Asc(String stringProperty);
+    
+    public List<TestEntity> findByStringProperty(String stringProperty, Sort sort);
     
 }

@@ -92,11 +92,19 @@ You can define a dynamic method to locate a list of entities.
 
 	}
 	
-You can define a dynamic method to locate to page through entities.
+You can define a dynamic method to locate and page through entities.
 
 	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
 	
 		Page<MyObject> findByFieldName(String value, Pageable req);
+
+	}
+	
+You can define a dynamic method to locate a Slice, or chunk of entities.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		Slice<MyObject> findByFieldName(String value, Pageable req);
 
 	}
 	
@@ -105,6 +113,8 @@ You can define a dynamic method with a slightly more complex parameter combinati
 	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
 	
 		List<MyObject> findByField1NameAndField2Name(String value1, String value2);
+		
+		List<MyObject> findByField1NameOrField2Name(String value1, String value2);
 
 	}
 	
@@ -113,5 +123,23 @@ You can define a dynamic method with complex types using nested parameter syntax
 	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
 	
 		List<MyObject> findByObjectField_NestedField(String value);
+
+	}
+	
+You can define a dynamic method with limiting.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		List<MyObject> findFirst10ByFieldName(String value);
+
+	}
+	
+You can define a dynamic method with sorting.
+
+	public interface MyRespository extends OrchestrateRepository<MyObject, String>{
+	
+		List<MyObject> findByFieldNameOrderByFieldNameAsc(String value);
+		
+		List<MyObject> findByFieldName(String value, Sort sort);
 
 	}

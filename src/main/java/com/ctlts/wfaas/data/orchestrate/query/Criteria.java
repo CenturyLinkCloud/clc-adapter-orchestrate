@@ -26,10 +26,6 @@ public abstract class Criteria {
         return continuation;
     }
     
-    public Query createQuery() {
-        return new Query(createStatement());
-    }
-    
     public Criteria getParent() {
         return parent;
     }

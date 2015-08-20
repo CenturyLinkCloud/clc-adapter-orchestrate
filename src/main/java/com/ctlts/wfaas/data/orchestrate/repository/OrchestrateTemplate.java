@@ -34,6 +34,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -177,11 +178,21 @@ public class OrchestrateTemplate {
                 .path("/" + collection + "/" + id)
                         .build()
                             .toUri();
-        
+        ResponseEntity<Map> res = null;
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + Base64.getEncoder().encodeToString(apiKey.getBytes()));
         
-        ResponseEntity<Map> res = new RestTemplate().exchange(uri, HttpMethod.GET, new HttpEntity(headers), Map.class);
+        try {
+        
+        	res = new RestTemplate().exchange(uri, HttpMethod.GET, new HttpEntity(headers), Map.class);
+        
+        } catch (HttpClientErrorException e) {
+        	if (e.getStatusCode().value() != 404) {
+                throw e;
+            } else {
+            	return null;
+            }
+        }
         
         try {
             

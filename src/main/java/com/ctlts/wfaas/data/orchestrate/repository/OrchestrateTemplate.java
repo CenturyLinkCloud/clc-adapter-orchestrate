@@ -32,6 +32,7 @@ import javax.annotation.PreDestroy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
@@ -187,11 +188,13 @@ public class OrchestrateTemplate {
         	res = new RestTemplate().exchange(uri, HttpMethod.GET, new HttpEntity(headers), Map.class);
         
         } catch (HttpClientErrorException e) {
-        	if (e.getStatusCode().value() != 404) {
+            
+        	if (!HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
                 throw e;
-            } else {
-            	return null;
-            }
+            } 
+        	
+        	return null;
+        	
         }
         
         try {

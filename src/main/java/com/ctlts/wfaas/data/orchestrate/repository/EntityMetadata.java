@@ -19,6 +19,8 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.data.annotation.Id;
@@ -68,7 +70,17 @@ public class EntityMetadata {
         
         Assert.notNull(target, "The target can not be null.");
         
-        Field field = Arrays.stream(type.getDeclaredFields())
+        Class<?> t = type;
+        List<Field> fields = new LinkedList<Field>();
+        
+        while(t != null) {
+            fields.addAll(Arrays.asList(t.getDeclaredFields()));
+            t = t.getSuperclass();
+        }
+        
+        Arrays.asList(type.getDeclaredFields());
+        
+        Field field = fields.stream()
             .filter(f -> AnnotationUtils.getAnnotation(f, Id.class) != null)
                 .findFirst()
                     .orElseThrow(() -> new OrchestrateException("An @Id has not defined for the class."));

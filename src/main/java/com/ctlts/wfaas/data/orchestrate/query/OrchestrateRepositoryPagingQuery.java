@@ -45,7 +45,7 @@ public class OrchestrateRepositoryPagingQuery extends OrchestrateRepositoryQuery
         PageRequest pageReq = (PageRequest) parameters[getQueryMethod().getParameters().getPageableIndex()];
         
         ResultSet<?> results = getOrchestrateTemplate().query(getEntityMetadata().getCollection(), query, 
-                getMetadata().getDomainType(), pageReq.getPageSize(), pageReq.getPageSize() * pageReq.getOffset());
+                getMetadata().getDomainType(), pageReq.getPageSize(), pageReq.getOffset());
         
         return new PageImpl<>((List<?>) results.getValue(), pageReq, results.getTotalSize());
         

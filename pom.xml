@@ -18,7 +18,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ctlts</groupId>
 	<artifactId>wfaas-adapter-orchestrate</artifactId>
-	<version>0.0.11-SNAPSHOT</version>
+	<version>0.0.10</version>
 	<name>wfaas-adapter-orchestrate</name>
 	<packaging>jar</packaging>
 	<properties>

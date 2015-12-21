@@ -160,6 +160,28 @@ public class OrchestrateCrudRepositoryTest {
         assertEquals("Checking that the list is the expected size.", values.get(1).getStringProperty(), actual.getStringProperty());
 
     }
+    
+    @Test
+    public void testFind() {
+
+        List<TestEntity> values = Arrays.asList(1, 2).stream()
+                .map(v -> {
+
+                    TestEntity t = new TestEntity();
+                    t.setStringProperty(String.format("Hello %s time(s)", v));
+
+                    return t;
+
+                }).collect(Collectors.toList());
+        repository.save(values);
+
+        Entity<TestEntity> actual = repository.find(values.get(1).getId());
+
+        assertNotNull("Checking that the result is not null.", actual);
+        assertNotNull("Checking that ther value attribute is set.", actual.getValue());
+        assertNotNull("Checking that ther ref attribute is set.", actual.getRef());
+
+    }
 
     @Test
     public void testFindAllByIds() {

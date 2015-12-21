@@ -35,6 +35,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -90,8 +91,12 @@ public class OrchestrateTemplate {
         client.close();
     }
 
-    @SuppressWarnings("rawtypes")
     public <E> E save(String collection, String id, E entity) {
+        return save(collection, id, entity, null); 
+    }
+
+    @SuppressWarnings("rawtypes")
+    public <E> E save(String collection, String id, E entity, String ref) {
         
         Assert.hasLength(collection, "The collection can not be null or an empty String.");
         Assert.hasLength(id, "The id can not be null or an empty String.");
@@ -105,6 +110,10 @@ public class OrchestrateTemplate {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + Base64.getEncoder().encodeToString(apiKey.getBytes()));
         headers.add("Content-Type", "application/json");
+        
+        if(StringUtils.hasText(ref)){
+            headers.add("If-Match", ref);
+        }
         
         try {
             
@@ -124,7 +133,7 @@ public class OrchestrateTemplate {
         } 
         
     }
-
+    
     public <E> ResultSet<List<E>> query(String collection, Query query, Class<E> type) {
         return query(collection, query.getStatement(), query.getSort(), type, DEFAULT_MAX_RESULTSET_SIZE, 0);
     }
@@ -207,6 +216,45 @@ public class OrchestrateTemplate {
         
     }
 
+    @SuppressWarnings("rawtypes")
+    public <E> Entity<E> findEntityById(String id, Class<E> entityClass, String collection) {
+        
+        URI uri = UriComponentsBuilder.fromHttpUrl(endpoint)
+                .path("/" + collection + "/" + id)
+                        .build()
+                            .toUri();
+        ResponseEntity<Map> res = null;
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Basic " + Base64.getEncoder().encodeToString(apiKey.getBytes()));
+        
+        try {
+        
+            res = new RestTemplate().exchange(uri, HttpMethod.GET, new HttpEntity(headers), Map.class);
+        
+        } catch (HttpClientErrorException e) {
+            
+            if (!HttpStatus.NOT_FOUND.equals(e.getStatusCode())) {
+                throw e;
+            } 
+            
+            return null;
+            
+        }
+        
+        try {
+            
+            Entity<E> entity = new Entity<E>();
+            entity.setRef(res.getHeaders().getETag().replace("-gzip", ""));
+            entity.setValue(mapper.readValue(new ObjectMapper().writeValueAsString(res.getBody()), entityClass));
+
+            return entity;
+            
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        
+    }
+    
     public boolean exists(String query, Class<?> entityClass, String collection) {
         return !query(collection, query, "", entityClass, DEFAULT_MAX_RESULTSET_SIZE, 0).getValue().isEmpty();
     }

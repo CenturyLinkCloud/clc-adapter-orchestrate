@@ -38,7 +38,29 @@ public class ExpressionCriteria extends Criteria {
     @Override
     public String createStatement() {
         
-        String query = String.format("%s:\"%s\"", resolveDotPath(), value);
+        // Escape any special characters
+        // + - && || ! ( ) { } [ ] ^ " ~ * ? : \
+        String escaped = String.valueOf(value)
+            .replaceAll("[\\+]", "\\+")
+            .replaceAll("[\\-]", "\\-")
+            .replaceAll("[\\&\\&]", "\\&\\&")
+            .replaceAll("[\\|\\|]", "\\|\\|")
+            .replaceAll("[\\!]", "\\!")
+            .replaceAll("[\\(]", "\\(")
+            .replaceAll("[\\)]", "\\)")
+            .replaceAll("[\\{]", "\\{")
+            .replaceAll("[\\}]", "\\}")
+            .replaceAll("[\\[", "\\[")
+            .replaceAll("[\\]]", "\\]")
+            .replaceAll("[\\^]", "\\^")
+            .replaceAll("[\\\"]", "\\\"")
+            .replaceAll("[\\~]", "\\~")
+            .replaceAll("[\\*]", "\\*")
+            .replaceAll("[\\?]", "\\?")
+            .replaceAll("[\\:]", "\\:")
+            .replaceAll("[\\\\]", "\\\\");
+        
+        String query = String.format("%s:\"%s\"", resolveDotPath(), escaped);
     
         return getContinuation() != null ? String.format(
                 "%s %s", query, getContinuation().createQuery()) : query;

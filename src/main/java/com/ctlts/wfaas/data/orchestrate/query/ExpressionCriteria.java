@@ -38,7 +38,11 @@ public class ExpressionCriteria extends Criteria {
     @Override
     public String createStatement() {
         
-        String query = String.format("%s:\"%s\"", resolveDotPath(), value);
+        // Protecting against query injection.
+        String escaped = String.valueOf(value)
+            .replaceAll("[\\`]", "\\\\`");
+        
+        String query = String.format("%s:`%s`", resolveDotPath(), escaped);
     
         return getContinuation() != null ? String.format(
                 "%s %s", query, getContinuation().createQuery()) : query;

@@ -26,4 +26,22 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface OrchestrateRepository<T, ID extends Serializable> extends CrudRepository<T, ID> {
 
+    /**
+     * Conditional save operation based on the provided ref value. If the save operation fails
+     * because the ref is out of date, an http status code of 412, precondition failed is thrown.
+     * 
+     * @param entity The entity to save.
+     * @param ref The previous ref value.
+     * @return The newly saved entity.
+     */
+    <S extends T> S save(S entity, String ref);
+    
+    /**
+     * Find method that returns a ref field indicating the current version of the resource.
+     * 
+     * @param id The identifier of the entity.
+     * @return Entity containing the ref and deserialized value.
+     */
+    Entity<T> find(ID id);
+    
 }

@@ -52,6 +52,15 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
         
     }
 
+    public <S extends T> S save(S entity, String ref) {
+        
+        String collection = entityMetadata.getCollection();
+        String id = (String)entityMetadata.getId(entity);
+        
+        return orchestrateTemplate.save(collection, id, entity, ref);
+        
+    }
+    
     @Override
     public <S extends T> List<S> save(Iterable<S> entities) {
         
@@ -66,6 +75,11 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
     public T findOne(ID id) {
         Assert.notNull(id, "The given id must not be null!");
         return (T) orchestrateTemplate.findById((String)id, metadata.getDomainType(), entityMetadata.getCollection());
+    }
+    
+    public Entity<T> find(ID id) {
+        Assert.notNull(id, "The given id must not be null!");
+        return (Entity<T>) orchestrateTemplate.findEntityById((String)id, metadata.getDomainType(), entityMetadata.getCollection());
     }
 
     @Override

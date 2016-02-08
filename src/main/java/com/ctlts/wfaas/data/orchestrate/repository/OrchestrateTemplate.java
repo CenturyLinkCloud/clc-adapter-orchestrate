@@ -54,7 +54,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 @SuppressWarnings("unchecked")
 public class OrchestrateTemplate {
     
-    private static final int DEFAULT_MAX_RESULTSET_SIZE = 100;
+    public static final int DEFAULT_MAX_RESULTSET_SIZE = 100;
     private static final int DEFAULT_TIMEOUT = 30;
     
     private String endpoint = "https://api.ctl-uc1-a.orchestrate.io/v0/";

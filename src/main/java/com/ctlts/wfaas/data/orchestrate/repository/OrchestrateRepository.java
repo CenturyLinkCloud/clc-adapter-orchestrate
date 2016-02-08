@@ -18,13 +18,13 @@ package com.ctlts.wfaas.data.orchestrate.repository;
 
 import java.io.Serializable;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
 /**
  * @author mramach
  *
  */
-public interface OrchestrateRepository<T, ID extends Serializable> extends CrudRepository<T, ID> {
+public interface OrchestrateRepository<T, ID extends Serializable> extends PagingAndSortingRepository<T, ID> {
 
     /**
      * Conditional save operation based on the provided ref value. If the save operation fails

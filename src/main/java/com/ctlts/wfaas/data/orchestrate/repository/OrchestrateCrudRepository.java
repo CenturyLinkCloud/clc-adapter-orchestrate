@@ -22,8 +22,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.core.RepositoryMetadata;
 import org.springframework.util.Assert;
+
+import com.ctlts.wfaas.data.orchestrate.query.OrchestrateQueryCreator;
 
 /**
  * @author mramach
@@ -128,6 +135,27 @@ public class OrchestrateCrudRepository<T, ID extends Serializable> implements Or
     @Override
     public void deleteAll() {
         orchestrateTemplate.deleteAll(entityMetadata.getCollection());
+    }
+
+    @Override
+    public Iterable<T> findAll(Sort sort) {
+        
+        ResultSet<?> results = orchestrateTemplate.query(entityMetadata.getCollection(), getQuery(), 
+                OrchestrateQueryCreator.createSort(entityMetadata, sort), metadata.getDomainType(), 
+                        OrchestrateTemplate.DEFAULT_MAX_RESULTSET_SIZE, 0);
+        
+        return (List<T>)results.getValue();
+        
+    }
+
+    @Override
+    public Page<T> findAll(Pageable pageable) {
+        
+        ResultSet<?> results = orchestrateTemplate.query(entityMetadata.getCollection(), getQuery(), 
+                null, metadata.getDomainType(), pageable.getPageSize(), pageable.getOffset());
+        
+        return new PageImpl<T>((List<T>) results.getValue(), pageable, results.getTotalSize());
+        
     }
 
     private String getIdQuery(String id) {

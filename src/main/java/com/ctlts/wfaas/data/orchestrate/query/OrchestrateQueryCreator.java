@@ -45,7 +45,7 @@ public class OrchestrateQueryCreator extends AbstractQueryCreator<Query, Criteri
 
     @Override
     protected Criteria create(Part part, Iterator<Object> iterator) {
-        return new ExpressionCriteria(null, part, iterator.next());
+        return ExpressionCriteriaFactory.create(null, part, iterator.next());
     }
 
     @Override

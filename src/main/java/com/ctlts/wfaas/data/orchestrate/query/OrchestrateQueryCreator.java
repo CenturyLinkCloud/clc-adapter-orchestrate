@@ -45,7 +45,7 @@ public class OrchestrateQueryCreator extends AbstractQueryCreator<Query, Criteri
 
     @Override
     protected Criteria create(Part part, Iterator<Object> iterator) {
-        return new ExpressionCriteria(null, part, iterator.next());
+        return ExpressionCriteriaFactory.create(null, part, iterator.next());
     }
 
     @Override
@@ -60,21 +60,22 @@ public class OrchestrateQueryCreator extends AbstractQueryCreator<Query, Criteri
 
     @Override
     protected Query complete(Criteria criteria, Sort sort) {
-        return new Query(criteria.getRoot().createStatement(), createSort(sort));
+        return new Query(criteria.getRoot().createStatement(), createSort(metadata, sort));
     }
     
-    private String createSort(Sort sort) {
+    public static String createSort(EntityMetadata metadata, Sort sort) {
         
         if(sort == null) {
             return "";
         }
         
         return StreamSupport.stream(sort.spliterator(), false)
-                .map(this::createSortExpression).collect(Collectors.joining(","));
+                .map(o -> OrchestrateQueryCreator.createSortExpression(metadata, o))
+                        .collect(Collectors.joining(","));
         
     }
     
-    private String createSortExpression(Order order) {
+    private static String createSortExpression(EntityMetadata metadata, Order order) {
         
         PropertyPath path = PropertyPath.from(order.getProperty(), metadata.getType());
         
@@ -85,7 +86,7 @@ public class OrchestrateQueryCreator extends AbstractQueryCreator<Query, Criteri
         
     }
     
-    private PropertyMetadata getPropertyMetadata(PropertyPath p) {
+    private static PropertyMetadata getPropertyMetadata(PropertyPath p) {
         
         return new EntityMetadata(p.getOwningType().getType())
             .getPropertyMetadata(PropertyPath.from(p.getSegment(), p.getOwningType().getType()));

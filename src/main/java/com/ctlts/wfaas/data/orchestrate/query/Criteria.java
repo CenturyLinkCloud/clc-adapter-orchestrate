@@ -31,7 +31,7 @@ public abstract class Criteria {
 
     public Criteria and(Criteria parent, Part p, Iterator<Object> iterator) {
 
-        Criteria next = new ExpressionCriteria(parent, p, iterator.next());
+        Criteria next = ExpressionCriteriaFactory.create(parent, p, iterator.next());
         continuation = new Continuation("AND", next);
         
         return next;

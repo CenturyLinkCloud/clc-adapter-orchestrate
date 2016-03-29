@@ -34,6 +34,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -46,6 +49,7 @@ import com.ctlts.wfaas.data.orchestrate.test.OrchestrateMockRule;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration
+@SuppressWarnings("unchecked")
 public class OrchestrateCrudRepositoryTest {
 
     @Rule
@@ -230,6 +234,60 @@ public class OrchestrateCrudRepositoryTest {
         Map<String, TestEntity> expected =
                 values.stream().collect(toMap(TestEntity::getId,
                         Function.identity()));
+        actual.forEach(testEntity -> assertEquals(expected.get(testEntity.getId()).getStringProperty(), testEntity.getStringProperty()));
+
+    }
+    
+    @Test
+    public void testFindAll_Sortable() {
+
+        List<TestEntity> values = Arrays.asList(1, 2).stream()
+                .map(v -> {
+
+                    TestEntity t = new TestEntity();
+                    t.setStringProperty(String.format("Hello %s time(s)", v));
+                    return t;
+
+                }).collect(Collectors.toList());
+        repository.save(values);
+
+        List<TestEntity> actual = (List<TestEntity>) repository
+                .findAll(new Sort(new Sort.Order("stringProperty")));
+
+        assertNotNull("Checking that the result is not null.", actual);
+        assertEquals(2, actual.size());
+
+        Map<String, TestEntity> expected =
+                values.stream().collect(toMap(TestEntity::getId,
+                        Function.identity()));
+        
+        actual.forEach(testEntity -> assertEquals(expected.get(testEntity.getId()).getStringProperty(), testEntity.getStringProperty()));
+
+    }
+    
+    @Test
+    public void testFindAll_Pageable() {
+
+        List<TestEntity> values = Arrays.asList(1, 2).stream()
+                .map(v -> {
+
+                    TestEntity t = new TestEntity();
+                    t.setStringProperty(String.format("Hello %s time(s)", v));
+                    return t;
+
+                }).collect(Collectors.toList());
+        repository.save(values);
+
+        Page<TestEntity> actual = repository
+                .findAll(new PageRequest(0, 100));
+
+        assertNotNull("Checking that the result is not null.", actual);
+        assertEquals(2, actual.getTotalElements());
+
+        Map<String, TestEntity> expected =
+                values.stream().collect(toMap(TestEntity::getId,
+                        Function.identity()));
+        
         actual.forEach(testEntity -> assertEquals(expected.get(testEntity.getId()).getStringProperty(), testEntity.getStringProperty()));
 
     }

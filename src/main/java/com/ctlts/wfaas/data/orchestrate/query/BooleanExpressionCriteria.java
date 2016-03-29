@@ -24,12 +24,12 @@ import org.springframework.data.repository.query.parser.Part;
 
 import com.ctlts.wfaas.data.orchestrate.repository.EntityMetadata;
 
-public class ExpressionCriteria extends Criteria {
+public class BooleanExpressionCriteria extends Criteria {
 
     private Part part;
     private String value;
     
-    public ExpressionCriteria(Criteria parent, Part part, Object value) {
+    public BooleanExpressionCriteria(Criteria parent, Part part, Object value) {
         super(parent);
         this.part = part;
         this.value = String.valueOf(value);
@@ -42,7 +42,7 @@ public class ExpressionCriteria extends Criteria {
         String escaped = String.valueOf(value)
             .replaceAll("[\\`]", "\\\\`");
         
-        String query = String.format("%s:`%s`", resolveDotPath(), escaped);
+        String query = String.format("%s:%s", resolveDotPath(), escaped);
     
         return getContinuation() != null ? String.format(
                 "%s %s", query, getContinuation().createQuery()) : query;

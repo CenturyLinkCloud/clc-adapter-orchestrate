@@ -42,7 +42,7 @@ public class StringExpressionCriteria extends Criteria {
         String escaped = String.valueOf(value)
             .replaceAll("[\\`]", "\\\\`");
         
-        String query = String.format("%s:`%s`", resolveDotPath(), escaped);
+        String query = String.format("value.%s:`%s`", resolveDotPath(), escaped);
     
         return getContinuation() != null ? String.format(
                 "%s %s", query, getContinuation().createQuery()) : query;
